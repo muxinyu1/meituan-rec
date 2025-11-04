@@ -1,0 +1,7 @@
+userid,age,level,gender,married,job,has_car,work_geohash,mobile_type,mobile_os,cross_age_gender_encoded,cross_age_married_encoded,cross_gender_married_encoded,cross_age_gender_married_encoded,cross_married_has_car_encoded,cross_level_age_encoded,cross_level_gender_encoded,cross_level_job_encoded,cross_mobile_os_age_encoded
+bd60e89c7ff12bbc0cf90eebd8d939e8038fa41bdfb7ebdc89b3aae20254aea3,0,3.0,1,0.0,0,0.0,0,7134491599445995150,909904245481459017,2,0,6,6,0,14,8,8,14
+da754cfd9379847c578c506697beb17023ff5b5779f12d9cfa3f4608ce1b799e,1,4.0,1,1.0,1,1.0,7223518242238638763,2186993488843040169,496186965396169796,5,4,7,15,4,22,11,13,8
+c2328a9345759e214fa276e13705c6fc313a2c70d8b79770d3a6c6af07fb8996,2,,1,0.0,0,0.0,0,0,0,8,6,6,23,0,44,20,24,2
+8fa5c62517dd1aaf44cb04bb2d1af332177e2a2ecf9cf157e05f12c76f9cb26d,3,4.0,1,0.0,1,0.0,0,0,0,11,9,6,31,0,24,11,13,3
+b0c1c6cbedc32a3302fe445c64e70817b0c0145d382b87ee41bb960cff04f208,4,,0,0.0,0,0.0,0,0,0,13,12,3,37,0,46,19,24,4
+70c2e56745be64ec49523c67f9814443074606562c7ee6d78e82fe2abdbe0130,0,,0,0.0,0,0.0,0,0,0,1,0,3,3,0,42,19,24,0
