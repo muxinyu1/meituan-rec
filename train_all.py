@@ -245,7 +245,7 @@ def train_lightgbm_model(train_df, val_df, scale_pos_weight):
         "n_jobs": -1,
         "verbose": -1,
     }
-    model = lgb.LGBMClassifier(**params)
+    model = lgb.LGBMClassifier(**params) # type: ignore
     model.fit(
         X_train,
         y_train,
@@ -254,7 +254,7 @@ def train_lightgbm_model(train_df, val_df, scale_pos_weight):
         categorical_feature=ALL_DISCRETE_FEATURES,
         callbacks=[lgb.early_stopping(30, verbose=True)],
     )
-    preds_val = model.predict_proba(X_val)[:, 1]
+    preds_val = model.predict_proba(X_val)[:, 1] # type: ignore
     best_val_auc = roc_auc_score(y_val, preds_val)
     model.booster_.save_model(save_path)
     print(f"Model saved to {save_path}")
@@ -324,7 +324,7 @@ EPOCHS = 15
 
 def main():
 
-    num_worker_cores = min(int(os.cpu_count()), 16)
+    num_worker_cores = min(int(os.cpu_count()), 16) # type: ignore
 
     dl_params = {
         "lr": LR,
@@ -464,7 +464,7 @@ def main():
         SparseFeat(
             f,
             vocabulary_size=all_vocab_sizes[f],
-            embedding_dim=dl_params["embedding_dim_per_feature"],
+            embedding_dim=dl_params["embedding_dim_per_feature"], # type: ignore
         )
         for f in ALL_DISCRETE_FEATURES
     ]
@@ -481,10 +481,10 @@ def main():
         linear_feature_columns, dnn_feature_columns, task="binary", device=str(device)
     )
     best_dcn.load_state_dict(torch.load(os.path.join(MODEL_DIR, "dcn.pth")))
-    best_xdeepfm = xDeepFM(linear_feature_columns, dnn_feature_columns, task='binary', device=device)
+    best_xdeepfm = xDeepFM(linear_feature_columns, dnn_feature_columns, task='binary', device=str(device))
     best_xdeepfm.load_state_dict(torch.load(os.path.join(MODEL_DIR, "xdeepfm.pth")))
 
-    best_autoint = AutoInt(linear_feature_columns, dnn_feature_columns, task='binary', device=device)
+    best_autoint = AutoInt(linear_feature_columns, dnn_feature_columns, task='binary', device=str(device))
     best_autoint.load_state_dict(torch.load(os.path.join(MODEL_DIR, "autoint.pth")))
     # 2. 生成预测
     print("Generating predictions from each model on the validation set...")
@@ -506,7 +506,7 @@ def main():
     ensemble_preds = (
         preds_v1.flatten()
         + preds_v2.flatten()
-        + preds_lgbm.flatten()
+        + preds_lgbm.flatten() # type: ignore
         + preds_deepfm.flatten()
         + preds_dcn.flatten()
         + preds_xdeepfm.flatten()

@@ -209,7 +209,7 @@ def main():
         print("No continuous features to normalize.")
 
     # --- 创建Dataset和DataLoader (极大简化！) ---
-    num_worker_cores = min(os.cpu_count(), 16) # 安全地获取CPU核心数
+    num_worker_cores = min(os.cpu_count(), 16) # 安全地获取CPU核心数 # type: ignore
     
     # Dataset的初始化变得非常简单
     train_dataset = RecSysDataset(train_df)

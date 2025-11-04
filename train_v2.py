@@ -12,7 +12,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import roc_auc_score
 
 # 假设你的模型定义在 model.py 文件中
-from model_v2 import Model
+from model_v2 import InteractionModel
 
 # ==============================================================================
 # 1. 从文件加载特征定义 (新方式！)
@@ -233,7 +233,7 @@ def main():
         print("No continuous features to normalize.")
 
     # --- 创建Dataset和DataLoader (极大简化！) ---
-    num_worker_cores = min(os.cpu_count(), 16)  # 安全地获取CPU核心数
+    num_worker_cores = min(os.cpu_count(), 16)  # type: ignore
 
     # Dataset的初始化变得非常简单
     train_dataset = RecSysDataset(train_df)
@@ -257,7 +257,7 @@ def main():
     )
 
     # --- 初始化模型、损失函数、优化器 ---
-    model = Model(  # 或者直接用 InteractionModel(...)
+    model = InteractionModel(  # 或者直接用 InteractionModel(...)
         user_feature_defs=USER_FEATURE_DEFS,
         item_feature_defs=ITEM_FEATURE_DEFS,
         context_feature_defs=CONTEXT_FEATURE_DEFS,
