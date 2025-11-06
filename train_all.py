@@ -31,8 +31,8 @@ from model_v2 import InteractionModel as ModelV2
 # ==============================================================================
 # 1. 基础设置 (和之前一样)
 # ==============================================================================
-PROCESSED_DATA_PATH = "data/processed/processed_samples.csv"
-FEATURE_DEFS_PATH = "data/processed/feature_definitions.json"
+PROCESSED_DATA_PATH = "data/processed/features_added_processed_samples.csv"
+FEATURE_DEFS_PATH = "data/processed/feature_definitions_new.json"
 MODEL_DIR = "models"
 os.makedirs(MODEL_DIR, exist_ok=True)
 
@@ -64,76 +64,154 @@ CONTEXT_FEATURE_DEFS = (CONTEXT_DISCRETE_VOCAB_SIZES, CONTEXT_CONTINUOUS_FEATURE
 print("Feature definitions loaded.\n")
 
 
-# ==============================================================================
-# 2. 自定义PyTorch模型的相关组件 (和您提供的一样)
-# ==============================================================================
-# 此部分代码 (RecSysDataset, collate_batch, get_dl_predictions, evaluate_dl_model, train_deep_model)
-# 与您提供的代码完全相同，为了简洁，此处省略。请在您的文件中保留这些函数的完整代码。
 class RecSysDataset(Dataset):
+    """
+    一个经过优化的Dataset类。
+    它在初始化时将特征转换为NumPy数组，以实现快速的数据访问。
+    """
+
     def __init__(self, df: pd.DataFrame):
-        self.df = df
+        # 预先提取列名列表以提高效率
         self.user_discrete_cols = list(USER_DISCRETE_VOCAB_SIZES.keys())
         self.user_continuous_cols = USER_CONTINUOUS_FEATURES
         self.item_discrete_cols = list(ITEM_DISCRETE_VOCAB_SIZES.keys())
         self.item_continuous_cols = ITEM_CONTINUOUS_FEATURES
         self.context_discrete_cols = list(CONTEXT_DISCRETE_VOCAB_SIZES.keys())
         self.context_continuous_cols = CONTEXT_CONTINUOUS_FEATURES
+
         self.label_col = "label"
 
+        # ---- 修改开始 ----
+
+        # 1. 整合所有特征列，并保持一个固定的顺序
+        self.all_feature_cols = (
+            self.user_discrete_cols
+            + self.user_continuous_cols
+            + self.item_discrete_cols
+            + self.item_continuous_cols
+            + self.context_discrete_cols
+            + self.context_continuous_cols
+        )
+
+        # 2. 将特征和标签从Pandas DataFrame一次性转换为NumPy数组
+        #    NumPy数组的索引比Pandas iloc/loc快得多
+        self.features_numpy = df[self.all_feature_cols].to_numpy()
+        self.labels_numpy = df[self.label_col].to_numpy()
+
+        # 3. 预先计算好每个特征组在NumPy数组中的切片索引
+        #    这样在__getitem__中就不用再做任何计算了
+        start = 0
+        end = len(self.user_discrete_cols)
+        self.user_discrete_slice = slice(start, end)
+
+        start = end
+        end += len(self.user_continuous_cols)
+        self.user_continuous_slice = slice(start, end)
+
+        start = end
+        end += len(self.item_discrete_cols)
+        self.item_discrete_slice = slice(start, end)
+
+        start = end
+        end += len(self.item_continuous_cols)
+        self.item_continuous_slice = slice(start, end)
+
+        start = end
+        end += len(self.context_discrete_cols)
+        self.context_discrete_slice = slice(start, end)
+
+        start = end
+        end += len(self.context_continuous_cols)
+        self.context_continuous_slice = slice(start, end)
+        # ---- 修改结束 ----
+
     def __len__(self):
-        return len(self.df)
+        return len(self.labels_numpy)  # 使用NumPy数组的长度
 
     def __getitem__(self, idx):
-        sample_row = self.df.iloc[idx]
-        user_features = {
-            name: sample_row[name]
-            for name in self.user_discrete_cols + self.user_continuous_cols
-        }
-        item_features = {
-            name: sample_row[name]
-            for name in self.item_discrete_cols + self.item_continuous_cols
-        }
-        context_features = {
-            name: sample_row[name]
-            for name in self.context_discrete_cols + self.context_continuous_cols
-        }
-        label = sample_row[self.label_col]
-        return user_features, item_features, context_features, label
+        # ---- 修改开始 ----
+        # 直接从NumPy数组中获取一行特征，非常快
+        feature_row = self.features_numpy[idx]
+
+        # 使用预先计算好的切片来提取各个部分的特征，避免了字典创建
+        user_discrete_data = feature_row[self.user_discrete_slice]
+        user_continuous_data = feature_row[self.user_continuous_slice]
+        item_discrete_data = feature_row[self.item_discrete_slice]
+        item_continuous_data = feature_row[self.item_continuous_slice]
+        context_discrete_data = feature_row[self.context_discrete_slice]
+        context_continuous_data = feature_row[self.context_continuous_slice]
+
+        label = self.labels_numpy[idx]
+
+        # 返回简单的NumPy数组元组，而不是字典
+        return (
+            user_discrete_data,
+            user_continuous_data,
+            item_discrete_data,
+            item_continuous_data,
+            context_discrete_data,
+            context_continuous_data,
+            label,
+        )
 
 
 def collate_batch(batch):
-    batched_user, batched_item, batched_context = {}, {}, {}
-    labels = []
-    for feat_type, feat_dict in [
-        ("user", batched_user),
-        ("item", batched_item),
-        ("context", batched_context),
-    ]:
-        for name in feature_definitions[feat_type]["discrete"]:
-            feat_dict[name] = []
-        for name in feature_definitions[feat_type]["continuous"]:
-            feat_dict[name] = []
 
-    for user_feats, item_feats, context_feats, label in batch:
-        for name, val in user_feats.items():
-            batched_user[name].append(val)
-        for name, val in item_feats.items():
-            batched_item[name].append(val)
-        for name, val in context_feats.items():
-            batched_context[name].append(val)
-        labels.append(label)
+    unzipped = zip(*batch)
 
-    for feat_dict, feat_type in [
-        (batched_user, "user"),
-        (batched_item, "item"),
-        (batched_context, "context"),
-    ]:
-        for name, vals in feat_dict.items():
-            is_continuous = name in feature_definitions[feat_type]["continuous"]
-            dtype = torch.float if is_continuous else torch.long
-            feat_dict[name] = torch.tensor(vals, dtype=dtype)
+    (
+        user_discrete_data,
+        user_continuous_data,
+        item_discrete_data,
+        item_continuous_data,
+        context_discrete_data,
+        context_continuous_data,
+        labels,
+    ) = unzipped
+
+    user_discrete_batch = torch.tensor(np.array(user_discrete_data), dtype=torch.long)
+    item_discrete_batch = torch.tensor(np.array(item_discrete_data), dtype=torch.long)
+    context_discrete_batch = torch.tensor(
+        np.array(context_discrete_data), dtype=torch.long
+    )
+
+    user_continuous_batch = torch.tensor(
+        np.array(user_continuous_data, dtype=np.float32), dtype=torch.float
+    )
+    item_continuous_batch = torch.tensor(
+        np.array(item_continuous_data, dtype=np.float32), dtype=torch.float
+    )
+    context_continuous_batch = torch.tensor(
+        np.array(context_continuous_data, dtype=np.float32), dtype=torch.float
+    )
 
     labels_tensor = torch.tensor(labels, dtype=torch.float)
+
+    # 在整理完批次数据后，仅创建一次字典，以匹配模型的输入格式
+    batched_user = {}
+    if user_discrete_data[0].size > 0:  # 检查是否有离散特征
+        for i, name in enumerate(USER_DISCRETE_VOCAB_SIZES.keys()):
+            batched_user[name] = user_discrete_batch[:, i]
+    if user_continuous_data[0].size > 0:  # 检查是否有连续特征
+        for i, name in enumerate(USER_CONTINUOUS_FEATURES):
+            batched_user[name] = user_continuous_batch[:, i]
+
+    batched_item = {}
+    if item_discrete_data[0].size > 0:
+        for i, name in enumerate(ITEM_DISCRETE_VOCAB_SIZES.keys()):
+            batched_item[name] = item_discrete_batch[:, i]
+    if item_continuous_data[0].size > 0:
+        for i, name in enumerate(ITEM_CONTINUOUS_FEATURES):
+            batched_item[name] = item_continuous_batch[:, i]
+
+    batched_context = {}
+    if context_discrete_data[0].size > 0:
+        for i, name in enumerate(CONTEXT_DISCRETE_VOCAB_SIZES.keys()):
+            batched_context[name] = context_discrete_batch[:, i]
+    if context_continuous_data[0].size > 0:
+        for i, name in enumerate(CONTEXT_CONTINUOUS_FEATURES):
+            batched_context[name] = context_continuous_batch[:, i]
+
     return batched_user, batched_item, batched_context, labels_tensor
 
 
@@ -245,7 +323,7 @@ def train_lightgbm_model(train_df, val_df, scale_pos_weight):
         "n_jobs": -1,
         "verbose": -1,
     }
-    model = lgb.LGBMClassifier(**params) # type: ignore
+    model = lgb.LGBMClassifier(**params)  # type: ignore
     model.fit(
         X_train,
         y_train,
@@ -254,7 +332,7 @@ def train_lightgbm_model(train_df, val_df, scale_pos_weight):
         categorical_feature=ALL_DISCRETE_FEATURES,
         callbacks=[lgb.early_stopping(30, verbose=True)],
     )
-    preds_val = model.predict_proba(X_val)[:, 1] # type: ignore
+    preds_val = model.predict_proba(X_val)[:, 1]  # type: ignore
     best_val_auc = roc_auc_score(y_val, preds_val)
     model.booster_.save_model(save_path)
     print(f"Model saved to {save_path}")
@@ -271,42 +349,65 @@ def train_deepctr_model(model_class, model_name, train_df, val_df, device, dl_pa
     print(f"\n--- Training deepctr Model: {model_name} ---")
     save_path = os.path.join(MODEL_DIR, f"{model_name}.pth")
 
-    all_vocab_sizes = {**USER_DISCRETE_VOCAB_SIZES, **ITEM_DISCRETE_VOCAB_SIZES, **CONTEXT_DISCRETE_VOCAB_SIZES}
-    
-    sparse_features = [SparseFeat(feat, vocabulary_size=all_vocab_sizes[feat], embedding_dim=dl_params['embedding_dim_per_feature'])
-                       for feat in ALL_DISCRETE_FEATURES]
+    all_vocab_sizes = {
+        **USER_DISCRETE_VOCAB_SIZES,
+        **ITEM_DISCRETE_VOCAB_SIZES,
+        **CONTEXT_DISCRETE_VOCAB_SIZES,
+    }
+
+    sparse_features = [
+        SparseFeat(
+            feat,
+            vocabulary_size=all_vocab_sizes[feat],
+            embedding_dim=dl_params["embedding_dim_per_feature"],
+        )
+        for feat in ALL_DISCRETE_FEATURES
+    ]
     dense_features = [DenseFeat(feat, 1) for feat in ALL_CONTINUOUS_FEATURES]
-    
+
     dnn_feature_columns = sparse_features + dense_features
     # 始终创建 linear_feature_columns，因为大部分模型都需要它作为第一个参数
     linear_feature_columns = sparse_features + dense_features
 
     # 关键修正：总是按顺序传入 linear 和 dnn 特征列。
     # 模型自身会决定如何使用它们。
-    model = model_class(linear_feature_columns, dnn_feature_columns, task='binary', device=device)
+    model = model_class(
+        linear_feature_columns, dnn_feature_columns, task="binary", device=device
+    )
 
-    model.compile(torch.optim.Adam(model.parameters(), lr=dl_params['lr']), "binary_crossentropy", metrics=["auc"])
+    model.compile(
+        torch.optim.Adam(model.parameters(), lr=dl_params["lr"]),
+        "binary_crossentropy",
+        metrics=["auc"],
+    )
 
     train_model_input = {name: train_df[name].values for name in ALL_FEATURES}
     val_model_input = {name: val_df[name].values for name in ALL_FEATURES}
-    
-    y_train = train_df['label'].values
-    y_val = val_df['label'].values
 
-    es = EarlyStopping(monitor='val_auc', patience=3, verbose=1, mode='max')
-    
-    history = model.fit(train_model_input, y_train,
-                        batch_size=dl_params['batch_size'],
-                        epochs=dl_params['epochs'],
-                        verbose=1,
-                        validation_data=(val_model_input, y_val),
-                        callbacks=[es])
-    
-    best_val_auc = max(history.history['val_auc'])
+    y_train = train_df["label"].values
+    y_val = val_df["label"].values
+
+    es = EarlyStopping(monitor="val_auc", patience=3, verbose=1, mode="max")
+
+    history = model.fit(
+        train_model_input,
+        y_train,
+        batch_size=dl_params["batch_size"],
+        epochs=dl_params["epochs"],
+        verbose=1,
+        validation_data=(val_model_input, y_val),
+        callbacks=[es],
+    )
+
+    best_val_auc = max(history.history["val_auc"])
     torch.save(model.state_dict(), save_path)
     print(f"Model saved to {save_path}")
-    print(f"--- Finished training {model_name}. Best Validation AUC: {best_val_auc:.5f} ---\n")
+    print(
+        f"--- Finished training {model_name}. Best Validation AUC: {best_val_auc:.5f} ---\n"
+    )
     return best_val_auc
+
+
 # ==============================================================================
 # 4. 主执行函数
 # ==============================================================================
@@ -314,17 +415,17 @@ def train_deepctr_model(model_class, model_name, train_df, val_df, device, dl_pa
 # 使用您定义的超参数
 VALIDATION_SPLIT = 0.2
 BATCH_SIZE = 1024
-EMB_DIM_PER_FEATURE = 32
+EMB_DIM_PER_FEATURE = 64
 EMB_DIM = 256
 HIDDEN_DIM = 512
 HEAD_NUMS = 16
 LR = 5e-4
-EPOCHS = 15
+EPOCHS = 30
 
 
 def main():
 
-    num_worker_cores = min(int(os.cpu_count()), 16) # type: ignore
+    num_worker_cores = min(int(os.cpu_count()), 16)  # type: ignore
 
     dl_params = {
         "lr": LR,
@@ -422,9 +523,13 @@ def main():
         DCN, "dcn", train_df, val_df, device, dl_params
     )
 
-    results["Model V6 (xDeepFM)"] = train_deepctr_model(xDeepFM, "xdeepfm", train_df, val_df, device, dl_params)
+    results["Model V6 (xDeepFM)"] = train_deepctr_model(
+        xDeepFM, "xdeepfm", train_df, val_df, device, dl_params
+    )
     # 注意：为 AutoInt 传入 use_linear=False
-    results["Model V7 (AutoInt)"] = train_deepctr_model(AutoInt, "autoint", train_df, val_df, device, dl_params)
+    results["Model V7 (AutoInt)"] = train_deepctr_model(
+        AutoInt, "autoint", train_df, val_df, device, dl_params
+    )
 
     # +++++++++++++++++++++++ 扩展后的模型融合评估 +++++++++++++++++++++++
     print("\n\n" + "=" * 50)
@@ -464,7 +569,7 @@ def main():
         SparseFeat(
             f,
             vocabulary_size=all_vocab_sizes[f],
-            embedding_dim=dl_params["embedding_dim_per_feature"], # type: ignore
+            embedding_dim=dl_params["embedding_dim_per_feature"],  # type: ignore
         )
         for f in ALL_DISCRETE_FEATURES
     ]
@@ -481,10 +586,14 @@ def main():
         linear_feature_columns, dnn_feature_columns, task="binary", device=str(device)
     )
     best_dcn.load_state_dict(torch.load(os.path.join(MODEL_DIR, "dcn.pth")))
-    best_xdeepfm = xDeepFM(linear_feature_columns, dnn_feature_columns, task='binary', device=str(device))
+    best_xdeepfm = xDeepFM(
+        linear_feature_columns, dnn_feature_columns, task="binary", device=str(device)
+    )
     best_xdeepfm.load_state_dict(torch.load(os.path.join(MODEL_DIR, "xdeepfm.pth")))
 
-    best_autoint = AutoInt(linear_feature_columns, dnn_feature_columns, task='binary', device=str(device))
+    best_autoint = AutoInt(
+        linear_feature_columns, dnn_feature_columns, task="binary", device=str(device)
+    )
     best_autoint.load_state_dict(torch.load(os.path.join(MODEL_DIR, "autoint.pth")))
     # 2. 生成预测
     print("Generating predictions from each model on the validation set...")
@@ -506,7 +615,7 @@ def main():
     ensemble_preds = (
         preds_v1.flatten()
         + preds_v2.flatten()
-        + preds_lgbm.flatten() # type: ignore
+        + preds_lgbm.flatten()  # type: ignore
         + preds_deepfm.flatten()
         + preds_dcn.flatten()
         + preds_xdeepfm.flatten()

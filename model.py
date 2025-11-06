@@ -113,13 +113,15 @@ class Model(nn.Module):
         head_dim = self.emb_dim // self.head_nums
         bsz = q.size(0)
 
-        q = q.view(bsz, self.head_nums, head_dim)
-        k = k.view(bsz, self.head_nums, head_dim)
-        v = v.view(bsz, self.head_nums, head_dim)
+        q_heads = q.view(bsz, self.head_nums, head_dim)
+        k_heads = k.view(bsz, self.head_nums, head_dim)
+        v_heads = v.view(bsz, self.head_nums, head_dim)
 
-        scores = q * k
-        context_aware_item_per_head = scores * v
-        context_aware_item_emb = context_aware_item_per_head.view(bsz, self.emb_dim)
+        scores = torch.sum(q_heads * k_heads, dim=-1)
+        gates = torch.sigmoid(scores)
+        gates = gates.unsqueeze(-1) 
+        gated_v_heads = gates * v_heads
+        context_aware_item_emb = gated_v_heads.view(bsz, self.emb_dim)
 
         combined_features = torch.cat([user_emb, context_aware_item_emb], dim=1)
 

@@ -13,6 +13,12 @@ unzip data.zip
 pip install -r requirements.txt
 ```
 
+## 增加一些统计特征
+
+```bash
+python preprocess_all_ctr.py
+```
+
 ## 训练
 
 ### 训练注意力模型（我们自己的模型）
