@@ -92,7 +92,12 @@ class Model(nn.Module):
         self.context_key = nn.Linear(emb_dim, emb_dim)
         self.item_value = nn.Linear(emb_dim, emb_dim)
 
-        self.cat_norm = nn.LayerNorm(emb_dim)
+        self.context_aware_item_proj = nn.Sequential(
+            nn.Linear(self.emb_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, self.emb_dim),
+            nn.LayerNorm(self.emb_dim)
+        )
 
         self.fusion_mlp = nn.Sequential(
             nn.Linear(emb_dim * 2, hidden_dim),
@@ -128,7 +133,7 @@ class Model(nn.Module):
         gates = gates.unsqueeze(-1) 
         gated_v_heads = gates * v_heads
         context_aware_item_emb = gated_v_heads.view(bsz, self.emb_dim)
-        context_aware_item_emb = self.cat_norm(context_aware_item_emb)
+        context_aware_item_emb = self.context_aware_item_proj(context_aware_item_emb)
 
         combined_features = torch.cat([user_emb, context_aware_item_emb], dim=1)
 
