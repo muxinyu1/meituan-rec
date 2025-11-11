@@ -13,6 +13,7 @@ class MixedFeatureEncoder(nn.Module):
         super().__init__()
         self.discrete_feature_names = list(discrete_vocab_sizes.keys())
         self.continuous_feature_names = continuous_feature_names
+        # self.num_continuous_features = len(self.continuous_feature_names)
 
         self.embedding_layers = nn.ModuleDict({
             feat_name: nn.Embedding(vocab_size, embedding_dim_per_feature)
@@ -21,7 +22,7 @@ class MixedFeatureEncoder(nn.Module):
 
         total_input_dim = (len(self.discrete_feature_names) * embedding_dim_per_feature) + \
                           len(self.continuous_feature_names)
-
+        # self.continuous_bn = nn.BatchNorm1d(self.num_continuous_features)
         self.projection_mlp = nn.Sequential(
             nn.Linear(total_input_dim, hidden_dim),
             nn.ReLU(),
@@ -37,6 +38,7 @@ class MixedFeatureEncoder(nn.Module):
 
         if self.continuous_feature_names:
             continuous_vectors = torch.stack([x[name] for name in self.continuous_feature_names], dim=1)
+            # continuous_vectors = self.continuous_bn(continuous_vectors)
             all_vectors = embedded_discrete + [continuous_vectors.float()]
         else:
             all_vectors = embedded_discrete
@@ -90,9 +92,12 @@ class Model(nn.Module):
         self.context_key = nn.Linear(emb_dim, emb_dim)
         self.item_value = nn.Linear(emb_dim, emb_dim)
 
+        self.cat_norm = nn.LayerNorm(emb_dim)
+
         self.fusion_mlp = nn.Sequential(
             nn.Linear(emb_dim * 2, hidden_dim),
-            nn.ReLU()
+            nn.ReLU(),
+            nn.LayerNorm(hidden_dim)
         )
 
         self.scorer = nn.Linear(hidden_dim, 1)
@@ -118,10 +123,12 @@ class Model(nn.Module):
         v_heads = v.view(bsz, self.head_nums, head_dim)
 
         scores = torch.sum(q_heads * k_heads, dim=-1)
+        scores = scores / (head_dim ** 0.5)
         gates = torch.sigmoid(scores)
         gates = gates.unsqueeze(-1) 
         gated_v_heads = gates * v_heads
         context_aware_item_emb = gated_v_heads.view(bsz, self.emb_dim)
+        context_aware_item_emb = self.cat_norm(context_aware_item_emb)
 
         combined_features = torch.cat([user_emb, context_aware_item_emb], dim=1)
 
