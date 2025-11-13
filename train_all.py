@@ -1,3 +1,4 @@
+import random
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
@@ -31,8 +32,8 @@ from model_v2 import InteractionModel as ModelV2
 # ==============================================================================
 # 1. 基础设置 (和之前一样)
 # ==============================================================================
-PROCESSED_DATA_PATH = "data/processed/features_added_processed_samples.csv"
-FEATURE_DEFS_PATH = "data/processed/feature_definitions_new.json"
+PROCESSED_DATA_PATH = "data/processed/train_temporal.csv"
+FEATURE_DEFS_PATH = "data/processed/train_temporal.json"
 MODEL_DIR = "models"
 os.makedirs(MODEL_DIR, exist_ok=True)
 
@@ -307,10 +308,19 @@ def train_lightgbm_model(train_df, val_df, scale_pos_weight):
     model_name = "lightgbm"
     print(f"\n--- Training Tree-based Model: {model_name} ---")
     save_path = os.path.join(MODEL_DIR, f"{model_name}.txt")
+    
+    # 删除元数据列(global_id, timestamp等)
+    metadata_cols = ["global_id", "timestamp"]
+    cols_to_drop = ["label"] + [col for col in metadata_cols if col in train_df.columns]
+    
     y_train = train_df["label"]
-    X_train = train_df.drop("label", axis=1)
+    X_train = train_df.drop(cols_to_drop, axis=1)
     y_val = val_df["label"]
-    X_val = val_df.drop("label", axis=1)
+    X_val = val_df.drop(cols_to_drop, axis=1)
+    
+    # 只保留实际存在于训练数据中的离散特征
+    categorical_features = [f for f in ALL_DISCRETE_FEATURES if f in X_train.columns]
+    
     params = {
         "objective": "binary",
         "metric": "auc",
@@ -329,7 +339,7 @@ def train_lightgbm_model(train_df, val_df, scale_pos_weight):
         y_train,
         eval_set=[(X_val, y_val)],
         eval_metric="auc",
-        categorical_feature=ALL_DISCRETE_FEATURES,
+        categorical_feature=categorical_features,
         callbacks=[lgb.early_stopping(30, verbose=True)],
     )
     preds_val = model.predict_proba(X_val)[:, 1]  # type: ignore
@@ -413,8 +423,8 @@ def train_deepctr_model(model_class, model_name, train_df, val_df, device, dl_pa
 # ==============================================================================
 
 # 使用您定义的超参数
-VALIDATION_SPLIT = 0.2
-BATCH_SIZE = 1024
+VALIDATION_SPLIT = 0.1
+BATCH_SIZE = 1024 # 不要动，不然xdeepfm会爆显存
 EMB_DIM_PER_FEATURE = 64
 EMB_DIM = 256
 HIDDEN_DIM = 512
@@ -422,9 +432,14 @@ HEAD_NUMS = 16
 LR = 5e-4
 EPOCHS = 30
 
-
+def set_seed(seed_value=42):
+    """设置所有随机种子以确保可复现性"""
+    random.seed(seed_value)
+    np.random.seed(seed_value)
+    torch.manual_seed(seed_value)
+    torch.cuda.manual_seed_all(seed_value)
 def main():
-
+    set_seed(42)
     num_worker_cores = min(int(os.cpu_count()), 16)  # type: ignore
 
     dl_params = {
@@ -496,9 +511,9 @@ def main():
         item_feature_defs=ITEM_FEATURE_DEFS,
         context_feature_defs=CONTEXT_FEATURE_DEFS,
     )
-    results["Model V1 (Attention)"] = train_deep_model(
-        model_v1, "model_v1", train_loader, val_loader, device, pos_weight, dl_params_v1
-    )
+    # results["Model V1 (Attention)"] = train_deep_model(
+    #     model_v1, "model_v1", train_loader, val_loader, device, pos_weight, dl_params_v1
+    # )
 
     model_v2 = ModelV2(
         embedding_dim_per_feature=EMB_DIM_PER_FEATURE,
@@ -507,9 +522,9 @@ def main():
         item_feature_defs=ITEM_FEATURE_DEFS,
         context_feature_defs=CONTEXT_FEATURE_DEFS,
     )
-    results["Model V2 (Interaction MLP)"] = train_deep_model(
-        model_v2, "model_v2", train_loader, val_loader, device, pos_weight, dl_params
-    )
+    # results["Model V2 (Interaction MLP)"] = train_deep_model(
+    #     model_v2, "model_v2", train_loader, val_loader, device, pos_weight, dl_params
+    # )
 
     results["Model V3 (LightGBM)"] = train_lightgbm_model(
         train_df, val_df, scale_pos_weight
@@ -600,7 +615,10 @@ def main():
     preds_v1 = get_dl_predictions(best_model_v1, val_loader, device)
     preds_v2 = get_dl_predictions(best_model_v2, val_loader, device)
 
-    X_val = val_df.drop("label", axis=1)
+    # 删除元数据列
+    metadata_cols = ["global_id", "timestamp"]
+    cols_to_drop = ["label"] + [col for col in metadata_cols if col in val_df.columns]
+    X_val = val_df.drop(cols_to_drop, axis=1)
     preds_lgbm = best_lgbm.predict(X_val)
 
     val_model_input = {name: val_df[name].values for name in ALL_FEATURES}

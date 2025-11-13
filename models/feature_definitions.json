@@ -1,0 +1,85 @@
+{
+  "user": {
+    "discrete": {
+      "cross_age_gender_encoded": 21,
+      "cross_age_gender_married_encoded": 59,
+      "cross_age_married_encoded": 21,
+      "cross_level_age_encoded": 49,
+      "cross_level_gender_encoded": 21,
+      "cross_level_job_encoded": 28,
+      "cross_mobile_os_age_encoded": 21,
+      "job": 4,
+      "mobile_os": 3,
+      "mobile_type": 2487
+    },
+    "continuous": [
+      "online_days",
+      "user_displayed_item_num"
+    ]
+  },
+  "item": {
+    "discrete": {
+      "cate_1": 31,
+      "cate_2": 786,
+      "cate_3": 376,
+      "dtype": 26
+    },
+    "continuous": []
+  },
+  "context": {
+    "discrete": {
+      "cityid": 1180,
+      "cityid_bucket": 101,
+      "day_of_month": 11,
+      "hour": 24,
+      "is_same_city": 2,
+      "loc_cityid": 514,
+      "time_slot": 5,
+      "user_displayed_item_num_is_missing": 2,
+      "weather": 14,
+      "weekday": 7
+    },
+    "continuous": [
+      "age_cate_2_ctr",
+      "age_cate_3_ctr",
+      "age_gender_cate_1_ctr",
+      "age_gender_cate_2_ctr",
+      "age_gender_cate_3_ctr",
+      "age_gender_married_cate_1_ctr",
+      "age_gender_married_cate_2_ctr",
+      "age_gender_married_cate_3_ctr",
+      "cate_2_ctr",
+      "cate_2_mobile_os_ctr",
+      "cate_3_ctr",
+      "cityid_age_cate_1_ctr",
+      "cityid_age_cate_2_ctr",
+      "cityid_age_cate_3_ctr",
+      "cityid_cate_2_ctr",
+      "cityid_cate_3_ctr",
+      "cityid_level_cate_2_ctr",
+      "cityid_mobile_type_ctr",
+      "distance",
+      "gender_cate_2_ctr",
+      "gender_cate_3_ctr",
+      "hour_cos",
+      "hour_sin",
+      "item_ave_price",
+      "itemid_click_count_60d",
+      "itemid_ctr",
+      "job_cate_2_ctr",
+      "level_cate_1_ctr",
+      "level_cate_2_ctr",
+      "level_mobile_type_ctr",
+      "mobile_type_age_cate_1_ctr",
+      "mobile_type_age_cate_2_ctr",
+      "mobile_type_age_cate_3_ctr",
+      "mobile_type_age_gender_cate_1_ctr",
+      "mobile_type_age_gender_cate_2_ctr",
+      "mobile_type_age_gender_cate_3_ctr",
+      "month_cate_2_ctr",
+      "price",
+      "user_home_dis",
+      "user_work_dis"
+    ]
+  }
+}
