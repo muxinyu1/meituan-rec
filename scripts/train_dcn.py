@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Train and evaluate a DCN v2 model on the Meituan recommendation dataset."""
+"""Train and evaluate a DCN v2 model on the transformed Meituan recommendation dataset."""
 from __future__ import annotations
 
 import argparse
@@ -9,13 +9,13 @@ from typing import Dict, List
 import numpy as np
 import pandas as pd
 import torch
-from deepctr_torch.inputs import SparseFeat, get_feature_names
+from deepctr_torch.inputs import DenseFeat, SparseFeat, get_feature_names
 from deepctr_torch.models import DCN
 from sklearn.preprocessing import LabelEncoder
 
-DEFAULT_FEATURE_ORDER: List[str] = [
+SPARSE_FEATURES: List[str] = [
     # "userid",
-    # "itemid",
+    "itemid",
     "cityid",
     "loc_cityid",
     "weekday",
@@ -37,36 +37,44 @@ DEFAULT_FEATURE_ORDER: List[str] = [
     "timeslot",
     "is_same_city",
     "is_weekend",
-    "distance_bin",
-    "user_home_dis_bin",
-    "user_work_dis_bin",
-    "item_ave_price_bin",
-    "price_bin",
-    "user_displayed_item_num_bin",
-    "online_days_bin",
-    "temp_bin",
-    "discount_rate_bin",
-    "distance_home_ratio_bin",
-        "cityid_freq_bin",
-        "dtype_freq_bin",
-    "dtype_distance",
 ]
+
+DENSE_FEATURES: List[str] = [
+    "distance",
+    "user_home_dis",
+    "user_work_dis",
+    "user_home_dis_is_far",
+    "user_work_dis_is_far",
+    "item_ave_price",
+    "price",
+    "user_displayed_item_num",
+    "online_days",
+    "temp",
+    "discount_rate",
+    "distance_home_ratio",
+    "sale",
+    "price_ratio",
+    "cityid_freq",
+    "dtype_freq",
+]
+
+DEFAULT_FEATURE_ORDER: List[str] = [*SPARSE_FEATURES, *DENSE_FEATURES]
 
 LABEL_COLUMN = "label"
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Train DCN v2 on binned datasets using DeepCTR-Torch.")
+    parser = argparse.ArgumentParser(description="Train DCN v2 on transformed datasets using DeepCTR-Torch.")
     parser.add_argument(
         "--train",
         type=Path,
-        default=Path("data/recsys_task_data/train_merged_binned_train-20221014.csv"),
+        default=Path("data/recsys_task_data/train_merged_transformed_train-20221014.csv"),
         help="Path to the training split CSV.",
     )
     parser.add_argument(
         "--val",
         type=Path,
-        default=Path("data/recsys_task_data/train_merged_binned_val-20221014.csv"),
+        default=Path("data/recsys_task_data/train_merged_transformed_val-20221014.csv"),
         help="Path to the validation split CSV.",
     )
     parser.add_argument(
@@ -155,13 +163,23 @@ def label_encode_columns(train_df: pd.DataFrame, val_df: pd.DataFrame, columns: 
     return encoders
 
 
-def build_feature_columns(encoders: Dict[str, LabelEncoder], embedding_dim: int) -> List[SparseFeat]:
-    feature_columns: List[SparseFeat] = []
+def prepare_dense_columns(train_df: pd.DataFrame, val_df: pd.DataFrame, columns: List[str]) -> None:
+    for col in columns:
+        train_df[col] = pd.to_numeric(train_df[col], errors="coerce").fillna(0)
+        val_df[col] = pd.to_numeric(val_df[col], errors="coerce").fillna(0)
+
+
+def build_feature_columns(
+    encoders: Dict[str, LabelEncoder], embedding_dim: int
+) -> List[object]:
+    feature_columns: List[object] = []
     for col, encoder in encoders.items():
         vocab_size = len(encoder.classes_)
         feature_columns.append(
             SparseFeat(col, vocabulary_size=vocab_size, embedding_dim=embedding_dim)
         )
+    for col in DENSE_FEATURES:
+        feature_columns.append(DenseFeat(col, 1))
     return feature_columns
 
 
@@ -176,7 +194,9 @@ def main() -> None:
     train_df = data["train"].copy()
     val_df = data["val"].copy()
 
-    encoders = label_encode_columns(train_df, val_df, DEFAULT_FEATURE_ORDER)
+    encoders = label_encode_columns(train_df, val_df, SPARSE_FEATURES)
+    prepare_dense_columns(train_df, val_df, DENSE_FEATURES)
+
     feature_columns = build_feature_columns(encoders, args.embedding_dim)
     feature_names = get_feature_names(feature_columns)
 

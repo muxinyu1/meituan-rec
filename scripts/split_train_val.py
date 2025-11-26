@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Split the binned training dataset into train and validation subsets."""
+"""Split the transformed training dataset into train and validation subsets."""
 from __future__ import annotations
 
 import argparse
@@ -66,29 +66,29 @@ def _verify_coverage(full_df: pd.DataFrame, val_df: pd.DataFrame) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Split binned train data into train/validation subsets.")
+    parser = argparse.ArgumentParser(description="Split transformed train data into train/validation subsets.")
     parser.add_argument(
         "--input",
         type=Path,
-        default=Path("data/recsys_task_data/train_merged_binned-20221014.csv"),
-        help="Path to the binned training dataset.",
+        default=Path("data/recsys_task_data/train_merged_transformed-20221014.csv"),
+        help="Path to the transformed training dataset.",
     )
     parser.add_argument(
         "--train-output",
         type=Path,
-        default=Path("data/recsys_task_data/train_merged_binned_train-20221014.csv"),
+        default=Path("data/recsys_task_data/train_merged_transformed_train-20221014.csv"),
         help="Output path for the training subset.",
     )
     parser.add_argument(
         "--val-output",
         type=Path,
-        default=Path("data/recsys_task_data/train_merged_binned_val-20221014.csv"),
+        default=Path("data/recsys_task_data/train_merged_transformed_val-20221014.csv"),
         help="Output path for the validation subset.",
     )
     parser.add_argument(
         "--val-ratio",
         type=float,
-        default=0.1,
+        default=0.01,
         help="Approximate fraction of samples to allocate to validation (0-1).",
     )
     parser.add_argument(

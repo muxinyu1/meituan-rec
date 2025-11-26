@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Train and evaluate a CatBoost model on the binned Meituan dataset."""
+"""Train and evaluate a CatBoost model on the transformed Meituan dataset."""
 from __future__ import annotations
 
 import argparse
@@ -12,11 +12,11 @@ from catboost.utils import get_gpu_device_count
 from sklearn.metrics import classification_report, roc_auc_score
 
 LABEL_COLUMN = "label"
-FEATURE_COLUMNS: List[str] = [
+CATEGORICAL_COLUMNS: List[str] = [
     # "userid",
-    # "itemid",
-    "cityid",
-    "loc_cityid",
+    "itemid",
+    #"cityid",
+    # "loc_cityid",
     "weekday",
     "hour",
     "weather",
@@ -36,34 +36,42 @@ FEATURE_COLUMNS: List[str] = [
     "timeslot",
     "is_same_city",
     "is_weekend",
-    "distance_bin",
-    "user_home_dis_bin",
-    "user_work_dis_bin",
-    "item_ave_price_bin",
-    "price_bin",
-    "user_displayed_item_num_bin",
-    "online_days_bin",
-    "temp_bin",
-    "discount_rate_bin",
-    "distance_home_ratio_bin",
-    "cityid_freq_bin",
-    "dtype_freq_bin",
-    "dtype_distance",
 ]
+
+NUMERICAL_COLUMNS: List[str] = [
+    "distance",
+    "user_home_dis",
+    "user_work_dis",
+    "user_home_dis_is_far",
+    "user_work_dis_is_far",
+    "item_ave_price",
+    "price",
+    "user_displayed_item_num",
+    "online_days",
+    "temp",
+    "discount_rate",
+    "distance_home_ratio",
+    "sale",
+    "price_ratio",
+    "cityid_freq",
+    "dtype_freq",
+]
+
+FEATURE_COLUMNS: List[str] = [*CATEGORICAL_COLUMNS, *NUMERICAL_COLUMNS]
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Train CatBoost on binned train/val splits.")
+    parser = argparse.ArgumentParser(description="Train CatBoost on transformed (non-binned) train/val splits.")
     parser.add_argument(
         "--train",
         type=Path,
-        default=Path("data/recsys_task_data/train_merged_binned_train-20221014.csv"),
+        default=Path("data/recsys_task_data/train_merged_transformed_train-20221014.csv"),
         help="Training CSV path.",
     )
     parser.add_argument(
         "--val",
         type=Path,
-        default=Path("data/recsys_task_data/train_merged_binned_val-20221014.csv"),
+        default=Path("data/recsys_task_data/train_merged_transformed_val-20221014.csv"),
         help="Validation CSV path.",
     )
     parser.add_argument(
@@ -113,7 +121,7 @@ def parse_args() -> argparse.Namespace:
         type=str,
         nargs="*",
         default=None,
-        help="Override list of categorical feature names; defaults to all columns.",
+        help="Override list of categorical feature names; defaults to categorical columns list.",
     )
     parser.add_argument(
         "--auto-class-weights",
@@ -160,10 +168,18 @@ def ensure_columns(df: pd.DataFrame, columns: List[str], df_name: str) -> None:
         raise ValueError(f"{df_name} dataset missing columns: {missing_cols}")
 
 
-def to_catboost_strings(df: pd.DataFrame, columns: List[str], na_token: str = "<NA>") -> pd.DataFrame:
+def cast_categorical(df: pd.DataFrame, columns: List[str], na_token: str = "<NA>") -> None:
     for col in columns:
-        df[col] = df[col].astype(str).replace("nan", na_token)
-    return df
+        if col not in df.columns:
+            continue
+        df[col] = df[col].astype("string").fillna(na_token)
+
+
+def cast_numeric(df: pd.DataFrame, columns: List[str]) -> None:
+    for col in columns:
+        if col not in df.columns:
+            continue
+        df[col] = pd.to_numeric(df[col], errors="coerce")
 
 
 def analyze_feature_bias(
@@ -221,18 +237,29 @@ def main() -> None:
     if args.cat_features:
         cat_features = args.cat_features
     else:
-        cat_features = FEATURE_COLUMNS.copy()
+        cat_features = CATEGORICAL_COLUMNS.copy()
 
-    train_cat_df = to_catboost_strings(train_df[FEATURE_COLUMNS].copy(), cat_features)
-    val_cat_df = to_catboost_strings(val_df[FEATURE_COLUMNS].copy(), cat_features)
+    invalid_cats = [col for col in cat_features if col not in FEATURE_COLUMNS]
+    if invalid_cats:
+        raise ValueError(f"Categorical columns not found in feature set: {invalid_cats}")
+
+    numeric_features = [col for col in FEATURE_COLUMNS if col not in cat_features]
+
+    train_features = train_df[FEATURE_COLUMNS].copy()
+    val_features = val_df[FEATURE_COLUMNS].copy()
+
+    cast_categorical(train_features, cat_features)
+    cast_categorical(val_features, cat_features)
+    cast_numeric(train_features, numeric_features)
+    cast_numeric(val_features, numeric_features)
 
     train_pool = Pool(
-        data=train_cat_df,
+        data=train_features,
         label=train_df[LABEL_COLUMN],
         cat_features=cat_features,
     )
     val_pool = Pool(
-        data=val_cat_df,
+        data=val_features,
         label=val_df[LABEL_COLUMN],
         cat_features=cat_features,
     )

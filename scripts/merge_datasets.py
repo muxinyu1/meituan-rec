@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
-from typing import List
+from typing import Dict, List
+
+DEFAULT_MAX_USER_OCCURRENCES = 50
 
 import pandas as pd
 
@@ -17,17 +19,48 @@ def load_csv(path: Path) -> pd.DataFrame:
     return df
 
 
+def drop_active_users(
+    df: pd.DataFrame,
+    max_occurrences: int,
+) -> tuple[pd.DataFrame, Dict[str, int]]:
+    if max_occurrences is None or max_occurrences <= 0 or "userid" not in df.columns:
+        return df, {}
+
+    counts = df["userid"].value_counts(dropna=False)
+    to_remove = counts[counts > max_occurrences]
+    if to_remove.empty:
+        return df, {}
+
+    filtered_df = df[~df["userid"].isin(to_remove.index)].copy()
+    return filtered_df, to_remove.to_dict()
+
+
 def merge_datasets(
     train_path: Path,
     item_path: Path,
     user_path: Path,
     output_path: Path,
+    max_user_occurrences: int,
 ) -> List[str]:
     train_df = load_csv(train_path)
     item_df = load_csv(item_path)
     user_df = load_csv(user_path)
 
-    merged = train_df.merge(item_df, on="itemid", how="left", suffixes=("", "_item"))
+    filtered_train_df, removed_users = drop_active_users(train_df, max_user_occurrences)
+    if removed_users:
+        removed_rows = len(train_df) - len(filtered_train_df)
+        print(
+            f"Filtered {len(removed_users)} userids (> {max_user_occurrences} occurrences), "
+            f"removing {removed_rows} rows."
+        )
+        preview = ", ".join(
+            f"{uid}:{count}" for uid, count in list(removed_users.items())[:10]
+        )
+        print(f"Removed user details (userid:count): {preview}")
+    else:
+        filtered_train_df = train_df
+
+    merged = filtered_train_df.merge(item_df, on="itemid", how="left", suffixes=("", "_item"))
     merged = merged.merge(user_df, on="userid", how="left", suffixes=("", "_user"))
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -63,10 +96,22 @@ def main() -> None:
         default=Path("data/recsys_task_data/train_merged-20221014.csv"),
         help="Path to save merged CSV.",
     )
+    parser.add_argument(
+        "--max-user-occurrences",
+        type=int,
+        default=DEFAULT_MAX_USER_OCCURRENCES,
+        help="Drop userids whose occurrences exceed this threshold (<=0 to disable).",
+    )
 
     args = parser.parse_args()
 
-    missing_columns = merge_datasets(args.train, args.items, args.users, args.output)
+    missing_columns = merge_datasets(
+        args.train,
+        args.items,
+        args.users,
+        args.output,
+        args.max_user_occurrences,
+    )
 
     if missing_columns:
         print("Columns containing missing values:")
