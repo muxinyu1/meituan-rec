@@ -59,21 +59,33 @@ NUMERICAL_COLUMNS: List[str] = [
 
 FEATURE_COLUMNS: List[str] = [*CATEGORICAL_COLUMNS, *NUMERICAL_COLUMNS]
 
-
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Train CatBoost on transformed (non-binned) train/val splits.")
+    parser = argparse.ArgumentParser(description="Train CatBoost on transformed Meituan dataset.")
     parser.add_argument(
         "--train",
         type=Path,
         default=Path("data/recsys_task_data/train_merged_transformed_train-20221014.csv"),
-        help="Training CSV path.",
+        help="Training CSV path (used only if --only-train is not set).",
     )
     parser.add_argument(
         "--val",
         type=Path,
         default=Path("data/recsys_task_data/train_merged_transformed_val-20221014.csv"),
-        help="Validation CSV path.",
+        help="Validation CSV path (ignored if --only-train is True).",
     )
+    parser.add_argument(
+        "--only-train",
+        action="store_true",
+        help="If set, train on full dataset without validation (uses --full-train).",
+    )
+    parser.add_argument(
+        "--full-train",
+        type=Path,
+        default=Path("data/recsys_task_data/train_merged_transformed-20221014.csv"),
+        help="Path to full training dataset (used when --only-train is True).",
+    )
+
+    # 其他参数保持不变
     parser.add_argument(
         "--iterations",
         type=int,
@@ -108,7 +120,7 @@ def parse_args() -> argparse.Namespace:
         "--early-stopping-rounds",
         type=int,
         default=100,
-        help="Early stopping patience based on validation metrics.",
+        help="Early stopping patience (ignored if --only-train is True).",
     )
     parser.add_argument(
         "--eval-metric",
@@ -121,7 +133,7 @@ def parse_args() -> argparse.Namespace:
         type=str,
         nargs="*",
         default=None,
-        help="Override list of categorical feature names; defaults to categorical columns list.",
+        help="Override list of categorical feature names.",
     )
     parser.add_argument(
         "--auto-class-weights",
@@ -138,23 +150,22 @@ def parse_args() -> argparse.Namespace:
         "--badcase-topk",
         type=int,
         default=10,
-        help="Number of top false positives/negatives to print for analysis.",
+        help="Number of top false positives/negatives to print (ignored if --only-train).",
     )
     parser.add_argument(
         "--slice-cols",
         type=str,
         nargs="*",
         default=["weekday", "timeslot", "cityid", "dtype"],
-        help="Feature columns for slice bias analysis.",
+        help="Feature columns for slice bias analysis (ignored if --only-train).",
     )
     parser.add_argument(
         "--slice-topk",
         type=int,
         default=5,
-        help="Top slices to display per feature based on absolute bias.",
+        help="Top slices to display per feature (ignored if --only-train).",
     )
     return parser.parse_args()
-
 
 def load_dataset(path: Path) -> pd.DataFrame:
     if not path.exists():
@@ -223,109 +234,150 @@ def analyze_feature_bias(
             .to_string(index=False)
         )
 
-
 def main() -> None:
     args = parse_args()
 
-    train_df = load_dataset(args.train)
-    val_df = load_dataset(args.val)
+    if args.only_train:
+        print("=> Mode: ONLY TRAIN (no validation, no evaluation)")
+        train_df = load_dataset(args.full_train)
+        ensure_columns(train_df, [LABEL_COLUMN, *FEATURE_COLUMNS], "full-train")
 
-    ensure_columns(train_df, [LABEL_COLUMN, *FEATURE_COLUMNS], "train")
-    ensure_columns(val_df, [LABEL_COLUMN, *FEATURE_COLUMNS], "val")
+        cat_features = args.cat_features if args.cat_features else CATEGORICAL_COLUMNS.copy()
+        invalid_cats = [col for col in cat_features if col not in FEATURE_COLUMNS]
+        if invalid_cats:
+            raise ValueError(f"Categorical columns not in feature set: {invalid_cats}")
 
-    cat_features: List[str]
-    if args.cat_features:
-        cat_features = args.cat_features
+        numeric_features = [col for col in FEATURE_COLUMNS if col not in cat_features]
+        train_features = train_df[FEATURE_COLUMNS].copy()
+
+        cast_categorical(train_features, cat_features)
+        cast_numeric(train_features, numeric_features)
+
+        train_pool = Pool(
+            data=train_features,
+            label=train_df[LABEL_COLUMN],
+            cat_features=cat_features,
+        )
+
+        task_type = args.task_type or ("GPU" if get_gpu_device_count() > 0 else "CPU")
+        print(f"Using CatBoost task_type={task_type}")
+
+        model = CatBoostClassifier(
+            iterations=args.iterations,
+            learning_rate=args.learning_rate,
+            depth=args.depth,
+            loss_function="Logloss",
+            l2_leaf_reg=args.l2_leaf_reg,
+            random_seed=args.random_state,
+            task_type=task_type,
+            auto_class_weights="Balanced" if args.auto_class_weights else None,
+            verbose=200,
+            # ⚠️ No early stopping without validation
+        )
+
+        model.fit(train_pool)  # No eval_set
+
+        model.save_model("catboost_model.cbm")
+        print("Saved CatBoost model to catboost_model.cbm")
+
+        feature_imp = model.get_feature_importance(prettified=True)
+        print("Top 10 feature importances:")
+        print(feature_imp.head(10))
+
     else:
-        cat_features = CATEGORICAL_COLUMNS.copy()
+        # Original train + validation logic
+        print("=> Mode: TRAIN WITH VALIDATION")
+        train_df = load_dataset(args.train)
+        val_df = load_dataset(args.val)
 
-    invalid_cats = [col for col in cat_features if col not in FEATURE_COLUMNS]
-    if invalid_cats:
-        raise ValueError(f"Categorical columns not found in feature set: {invalid_cats}")
+        ensure_columns(train_df, [LABEL_COLUMN, *FEATURE_COLUMNS], "train")
+        ensure_columns(val_df, [LABEL_COLUMN, *FEATURE_COLUMNS], "val")
 
-    numeric_features = [col for col in FEATURE_COLUMNS if col not in cat_features]
+        cat_features = args.cat_features if args.cat_features else CATEGORICAL_COLUMNS.copy()
+        invalid_cats = [col for col in cat_features if col not in FEATURE_COLUMNS]
+        if invalid_cats:
+            raise ValueError(f"Categorical columns not found in feature set: {invalid_cats}")
 
-    train_features = train_df[FEATURE_COLUMNS].copy()
-    val_features = val_df[FEATURE_COLUMNS].copy()
+        numeric_features = [col for col in FEATURE_COLUMNS if col not in cat_features]
 
-    cast_categorical(train_features, cat_features)
-    cast_categorical(val_features, cat_features)
-    cast_numeric(train_features, numeric_features)
-    cast_numeric(val_features, numeric_features)
+        train_features = train_df[FEATURE_COLUMNS].copy()
+        val_features = val_df[FEATURE_COLUMNS].copy()
 
-    train_pool = Pool(
-        data=train_features,
-        label=train_df[LABEL_COLUMN],
-        cat_features=cat_features,
-    )
-    val_pool = Pool(
-        data=val_features,
-        label=val_df[LABEL_COLUMN],
-        cat_features=cat_features,
-    )
+        cast_categorical(train_features, cat_features)
+        cast_categorical(val_features, cat_features)
+        cast_numeric(train_features, numeric_features)
+        cast_numeric(val_features, numeric_features)
 
-    task_type = args.task_type
-    if task_type is None:
-        task_type = "GPU" if get_gpu_device_count() > 0 else "CPU"
-    print(f"Using CatBoost task_type={task_type}")
+        train_pool = Pool(
+            data=train_features,
+            label=train_df[LABEL_COLUMN],
+            cat_features=cat_features,
+        )
+        val_pool = Pool(
+            data=val_features,
+            label=val_df[LABEL_COLUMN],
+            cat_features=cat_features,
+        )
 
-    model = CatBoostClassifier(
-        iterations=args.iterations,
-        learning_rate=args.learning_rate,
-        depth=args.depth,
-        loss_function="Logloss",
-        eval_metric=args.eval_metric,
-        l2_leaf_reg=args.l2_leaf_reg,
-        random_seed=args.random_state,
-        early_stopping_rounds=args.early_stopping_rounds,
-        task_type=task_type,
-        auto_class_weights="Balanced" if args.auto_class_weights else None,
-        verbose=200,
-    )
+        task_type = args.task_type or ("GPU" if get_gpu_device_count() > 0 else "CPU")
+        print(f"Using CatBoost task_type={task_type}")
 
-    model.fit(train_pool, eval_set=val_pool, use_best_model=True)
+        model = CatBoostClassifier(
+            iterations=args.iterations,
+            learning_rate=args.learning_rate,
+            depth=args.depth,
+            loss_function="Logloss",
+            eval_metric=args.eval_metric,
+            l2_leaf_reg=args.l2_leaf_reg,
+            random_seed=args.random_state,
+            early_stopping_rounds=args.early_stopping_rounds,
+            task_type=task_type,
+            auto_class_weights="Balanced" if args.auto_class_weights else None,
+            verbose=200,
+        )
 
-    val_pred_proba = model.predict_proba(val_pool)[:, 1]
-    val_pred_label = (val_pred_proba >= 0.5).astype(int)
+        model.fit(train_pool, eval_set=val_pool, use_best_model=True)
 
-    auc = roc_auc_score(val_df[LABEL_COLUMN], val_pred_proba)
-    print(f"Validation AUC: {auc:.6f}")
-    print("Classification report:\n", classification_report(val_df[LABEL_COLUMN], val_pred_label))
+        val_pred_proba = model.predict_proba(val_pool)[:, 1]
+        val_pred_label = (val_pred_proba >= 0.5).astype(int)
 
-    model.save_model("catboost_model.cbm")
-    print("Saved CatBoost model to catboost_model.cbm")
+        auc = roc_auc_score(val_df[LABEL_COLUMN], val_pred_proba)
+        print(f"Validation AUC: {auc:.6f}")
+        print("Classification report:\n", classification_report(val_df[LABEL_COLUMN], val_pred_label))
 
-    feature_imp = model.get_feature_importance(prettified=True)
-    print("Top 10 feature importances:")
-    print(feature_imp.head(10))
+        model.save_model("catboost_model.cbm")
+        print("Saved CatBoost model to catboost_model.cbm")
 
-    if args.badcase_topk > 0:
-        val_results = val_df.copy()
-        val_results["pred_proba"] = val_pred_proba
-        val_results["pred_label"] = val_pred_label
-        misclassified = val_results[val_results["pred_label"] != val_results[LABEL_COLUMN]]
+        feature_imp = model.get_feature_importance(prettified=True)
+        print("Top 10 feature importances:")
+        print(feature_imp.head(10))
 
-        false_pos = misclassified[misclassified[LABEL_COLUMN] == 0].sort_values(
-            "pred_proba", ascending=False
-        ).head(args.badcase_topk)
-        false_neg = misclassified[misclassified[LABEL_COLUMN] == 1].sort_values(
-            "pred_proba", ascending=True
-        ).head(args.badcase_topk)
+        if args.badcase_topk > 0:
+            val_results = val_df.copy()
+            val_results["pred_proba"] = val_pred_proba
+            val_results["pred_label"] = val_pred_label
+            misclassified = val_results[val_results["pred_label"] != val_results[LABEL_COLUMN]]
 
-        def _print_bad_cases(df: pd.DataFrame, title: str) -> None:
-            if df.empty:
-                print(f"No {title.lower()} found.")
-                return
-            print(f"\nTop {len(df)} {title} (showing label, pred_proba, key features):")
-            cols_to_show = [LABEL_COLUMN, "pred_proba", "pred_label", "weekday", "timeslot", "itemid", "userid"]
-            existing = [c for c in cols_to_show if c in df.columns]
-            print(df[existing].to_string(index=False))
+            false_pos = misclassified[misclassified[LABEL_COLUMN] == 0].sort_values(
+                "pred_proba", ascending=False
+            ).head(args.badcase_topk)
+            false_neg = misclassified[misclassified[LABEL_COLUMN] == 1].sort_values(
+                "pred_proba", ascending=True
+            ).head(args.badcase_topk)
 
-        _print_bad_cases(false_pos, "False Positives")
-        _print_bad_cases(false_neg, "False Negatives")
+            def _print_bad_cases(df: pd.DataFrame, title: str) -> None:
+                if df.empty:
+                    print(f"No {title.lower()} found.")
+                    return
+                print(f"\nTop {len(df)} {title} (showing label, pred_proba, key features):")
+                cols_to_show = [LABEL_COLUMN, "pred_proba", "pred_label", "weekday", "timeslot", "itemid"]
+                existing = [c for c in cols_to_show if c in df.columns]
+                print(df[existing].to_string(index=False))
 
-        analyze_feature_bias(val_results, args.slice_cols, args.slice_topk)
+            _print_bad_cases(false_pos, "False Positives")
+            _print_bad_cases(false_neg, "False Negatives")
 
-
+            analyze_feature_bias(val_results, args.slice_cols, args.slice_topk)
+            
 if __name__ == "__main__":
     main()
