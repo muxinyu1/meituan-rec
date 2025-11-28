@@ -1,0 +1,5 @@
+*.csv
+catboost_info
+data
+.vscode
+*.cbm
