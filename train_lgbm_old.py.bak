@@ -1,0 +1,573 @@
+#!/usr/bin/env python3
+"""
+LightGBM 训练脚本 (用于模型融合)
+特点：Label Encoding、内存优化、K折交叉验证
+"""
+
+import pandas as pd
+import numpy as np
+import gc
+import lightgbm as lgb
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import StratifiedKFold
+import time
+import warnings
+
+# 忽略 LightGBM 的一些冗余警告
+warnings.filterwarnings('ignore')
+
+def load_data():
+    """加载数据"""
+    print("加载数据...")
+    train_df = pd.read_csv('train.csv')
+    test_df = pd.read_csv('test.csv')
+    return train_df, test_df
+
+def reduce_mem_usage(df):
+    """内存优化"""
+    start_mem = df.memory_usage().sum() / 1024**2
+    for col in df.columns:
+        col_type = df[col].dtype
+        if col_type != object and col_type.name != 'category':
+            c_min = df[col].min()
+            c_max = df[col].max()
+            if str(col_type)[:3] == 'int':
+                if c_min > np.iinfo(np.int8).min and c_max < np.iinfo(np.int8).max:
+                    df[col] = df[col].astype(np.int8)
+                elif c_min > np.iinfo(np.int16).min and c_max < np.iinfo(np.int16).max:
+                    df[col] = df[col].astype(np.int16)
+                elif c_min > np.iinfo(np.int32).min and c_max < np.iinfo(np.int32).max:
+                    df[col] = df[col].astype(np.int32)
+            else:
+                if c_min > np.finfo(np.float32).min and c_max < np.finfo(np.float32).max:
+                    df[col] = df[col].astype(np.float32)
+    end_mem = df.memory_usage().sum() / 1024**2
+    print(f'内存优化: {start_mem:.2f}MB -> {end_mem:.2f}MB')
+    return df
+
+from sklearn.model_selection import StratifiedKFold
+
+
+def fill_missing_values(train_df, test_df):
+    """填充缺失值 - 参考 impute_merged_dataset.py"""
+    print("填充缺失值...")
+    
+    # 添加缺失值指示器
+    if 'level' in train_df.columns:
+        train_df['level_is_missing'] = train_df['level'].isna().astype(int)
+        test_df['level_is_missing'] = test_df['level'].isna().astype(int)
+    
+    # 使用中位数填充的列
+    median_columns = [
+        'online_days', 'price', 'user_displayed_item_num', 'level',
+        'item_ave_price', 'distance', 'temp_high', 'temp', 'temp_low',
+        'user_home_dis', 'user_work_dis'
+    ]
+    
+    for col in median_columns:
+        if col in train_df.columns:
+            numeric_train = pd.to_numeric(train_df[col], errors='coerce')
+            numeric_test = pd.to_numeric(test_df[col], errors='coerce')
+            median_value = numeric_train.median()
+            train_df[col] = numeric_train.fillna(median_value)
+            test_df[col] = numeric_test.fillna(median_value)
+    
+    # 使用众数填充的列
+    mode_columns = [
+        'cate_1', 'cate_2', 'cate_3', 'married', 'has_car',
+        'loc_cityid', 'cityid'
+    ]
+    
+    for col in mode_columns:
+        if col in train_df.columns:
+            mode_series = train_df[col].mode(dropna=True)
+            if not mode_series.empty:
+                mode_value = mode_series.iloc[0]
+                train_df[col] = train_df[col].fillna(mode_value)
+                test_df[col] = test_df[col].fillna(mode_value)
+    
+    return train_df, test_df
+
+
+def add_transform_features(train_df, test_df):
+    """添加特征工程 - 参考 transform_features.py"""
+    print("特征工程...")
+    
+    # 1. 距离异常值处理和标记
+    for col in ['user_home_dis', 'user_work_dis']:
+        if col in train_df.columns:
+            numeric_train = pd.to_numeric(train_df[col], errors='coerce')
+            numeric_test = pd.to_numeric(test_df[col], errors='coerce')
+            
+            threshold = numeric_train.quantile(0.95)
+            if not pd.isna(threshold):
+                non_outliers = numeric_train[numeric_train <= threshold]
+                replacement = non_outliers.median()
+                if pd.isna(replacement):
+                    replacement = numeric_train.median()
+                
+                # 添加是否远距离标记
+                train_df[f'{col}_is_far'] = ((numeric_train >= threshold) & numeric_train.notna()).astype(int)
+                test_df[f'{col}_is_far'] = ((numeric_test >= threshold) & numeric_test.notna()).astype(int)
+                
+                # 截断异常值
+                train_df[col] = numeric_train.where(numeric_train < threshold, replacement)
+                test_df[col] = numeric_test.where(numeric_test < threshold, replacement)
+    
+    # 2. 时间分段特征
+    for df in [train_df, test_df]:
+        if 'timestamp' in df.columns:
+            df['timestamp_dt'] = pd.to_datetime(df['timestamp'], unit='s', errors='coerce')
+            df['hour'] = df['timestamp_dt'].dt.hour
+            df['weekday'] = df['timestamp_dt'].dt.weekday
+        
+        if 'hour' in df.columns:
+            hour_series = pd.to_numeric(df['hour'], errors='coerce')
+            timeslot = pd.Series(0, index=df.index, dtype='int64')
+            timeslot = timeslot.mask(hour_series.between(5, 9, inclusive='both'), 1)
+            timeslot = timeslot.mask(hour_series.between(10, 10, inclusive='both'), 7)
+            timeslot = timeslot.mask(hour_series.between(11, 13, inclusive='both'), 2)
+            timeslot = timeslot.mask(hour_series.between(14, 15, inclusive='both'), 3)
+            timeslot = timeslot.mask(hour_series.between(16, 19, inclusive='both'), 4)
+            timeslot = timeslot.mask(hour_series.between(20, 23, inclusive='both'), 5)
+            df['timeslot'] = timeslot.fillna(0).astype('int64')
+            
+            # 周末标记
+            if 'weekday' in df.columns:
+                df['is_weekend'] = df['weekday'].isin([5, 6]).astype(int)
+            
+            # sin/cos 特征
+            df['hour_sin'] = np.sin(2 * np.pi * df['hour'] / 24).astype(np.float32)
+            df['hour_cos'] = np.cos(2 * np.pi * df['hour'] / 24).astype(np.float32)
+            df['weekday_sin'] = np.sin(2 * np.pi * df['weekday'] / 7).astype(np.float32)
+            df['weekday_cos'] = np.cos(2 * np.pi * df['weekday'] / 7).astype(np.float32)
+            
+            df.drop(['timestamp', 'timestamp_dt'], axis=1, inplace=True, errors='ignore')
+    
+    # 3. 城市相同标记
+    if {'loc_cityid', 'cityid'}.issubset(train_df.columns):
+        train_df['is_same_city'] = (
+            (train_df['loc_cityid'].notna()) & 
+            (train_df['cityid'].notna()) & 
+            (train_df['loc_cityid'] == train_df['cityid'])
+        ).astype(int)
+        test_df['is_same_city'] = (
+            (test_df['loc_cityid'].notna()) & 
+            (test_df['cityid'].notna()) & 
+            (test_df['loc_cityid'] == test_df['cityid'])
+        ).astype(int)
+    
+    # 4. 交叉特征
+    if {'item_ave_price', 'price'}.issubset(train_df.columns):
+        for df in [train_df, test_df]:
+            item_price = pd.to_numeric(df['item_ave_price'], errors='coerce').fillna(0)
+            price = pd.to_numeric(df['price'], errors='coerce').fillna(0)
+            df['discount_rate'] = (item_price - price) / (item_price + 1)
+    
+    if {'distance', 'user_home_dis'}.issubset(train_df.columns):
+        for df in [train_df, test_df]:
+            distance = pd.to_numeric(df['distance'], errors='coerce').fillna(0)
+            user_home = pd.to_numeric(df['user_home_dis'], errors='coerce').fillna(0)
+            df['distance_home_ratio'] = distance / (user_home + 1)
+    
+    # 5. 价格偏离特征 - 简化版本
+    if {'price', 'cityid', 'dtype'}.issubset(train_df.columns):
+        for df in [train_df, test_df]:
+            price = pd.to_numeric(df['price'], errors='coerce')
+            city = df['cityid'].fillna('__MISSING__').astype(str)
+            dtype = df['dtype'].fillna('__MISSING__').astype(str)
+            
+            # 使用组内中位数
+            combined_median = price.groupby([city, dtype]).transform('median')
+            dtype_median = price.groupby(dtype).transform('median')
+            global_median = price.median()
+            
+            reference_price = combined_median.fillna(dtype_median).fillna(global_median)
+            df['sale'] = price - reference_price
+            
+            reference_safe = reference_price.where(reference_price.abs() > 1e-6, np.nan)
+            ratio = price / reference_safe
+            df['price_ratio'] = ratio.replace([np.inf, -np.inf], np.nan).fillna(0)
+    
+    # 6. 频次特征
+    for col, freq_col in [('cityid', 'cityid_freq'), ('dtype', 'dtype_freq')]:
+        if col in train_df.columns:
+            combined = pd.concat([train_df[col], test_df[col]], axis=0)
+            counts = combined.value_counts(dropna=False)
+            train_df[freq_col] = np.log1p(train_df[col].map(counts).fillna(0))
+            test_df[freq_col] = np.log1p(test_df[col].map(counts).fillna(0))
+    
+    return train_df, test_df
+
+
+def bucket_rare_categories(train_df, test_df):
+    """低频类别处理 - 参考 transform_features.py"""
+    print("处理低频类别...")
+    
+    RARE_TOKEN = '<UNK>'
+    
+    # itemid 低频过滤
+    if 'itemid' in train_df.columns:
+        all_items = pd.concat([train_df['itemid'], test_df['itemid']], axis=0)
+        item_freq = all_items.value_counts()
+        valid_items = set(item_freq[item_freq >= 10].index)
+        
+        train_df['itemid'] = train_df['itemid'].astype(str)
+        test_df['itemid'] = test_df['itemid'].astype(str)
+        
+        train_df.loc[~train_df['itemid'].isin(valid_items), 'itemid'] = RARE_TOKEN
+        test_df.loc[~test_df['itemid'].isin(valid_items), 'itemid'] = RARE_TOKEN
+        
+        print(f"  itemid: 保留 {len(valid_items)} 个, UNK样本 {(train_df['itemid']==RARE_TOKEN).sum() + (test_df['itemid']==RARE_TOKEN).sum()}")
+    
+    # 其他类别的低频过滤
+    bucket_rules = [
+        ('cityid', 300),
+        ('loc_cityid', 250),
+        ('dtype', 100),
+        ('cate_1', 100),
+        ('cate_2', 100),
+        ('cate_3', 100),
+        ('mobile_type', 10000),
+    ]
+    
+    for col, threshold in bucket_rules:
+        if col in train_df.columns:
+            combined = pd.concat([train_df[col], test_df[col]], axis=0)
+            series = combined.astype(str)
+            counts = series.value_counts(dropna=False)
+            keep = set(counts[counts >= threshold].index)
+            
+            train_df[col] = train_df[col].astype(str).apply(lambda x: x if x in keep else RARE_TOKEN)
+            test_df[col] = test_df[col].astype(str).apply(lambda x: x if x in keep else RARE_TOKEN)
+    
+    return train_df, test_df
+
+
+def add_kfold_target_encoding(train_df, test_df, cols, target_col='label', n_folds=5):
+    """
+    K折目标编码 (Target Encoding)，防止数据泄露
+    """
+    print(f"执行 Target Encoding (K={n_folds}): {cols}...")
+    kf = StratifiedKFold(n_splits=n_folds, shuffle=True, random_state=42)
+    
+    # 初始化新列
+    for col in cols:
+        train_df[f'{col}_te'] = np.nan
+        test_df[f'{col}_te'] = np.nan
+        
+    # --- 1. 训练集：使用 Out-of-Fold 方式计算 ---
+    # 也就是：计算第 K 折的数据时，只用其他 K-1 折的数据来算均值
+    for split, (train_idx, val_idx) in enumerate(kf.split(train_df, train_df[target_col])):
+        X_tr, X_val = train_df.iloc[train_idx], train_df.iloc[val_idx]
+        
+        for col in cols:
+            # 计算当前折训练集的均值
+            means = X_tr.groupby(col)[target_col].mean()
+            # 映射到验证集 (当前折)
+            train_df.loc[val_idx, f'{col}_te'] = X_val[col].map(means)
+            
+    # --- 2. 测试集：使用全量训练集的均值 ---
+    for col in cols:
+        global_means = train_df.groupby(col)[target_col].mean()
+        test_df[f'{col}_te'] = test_df[col].map(global_means)
+        
+        # --- 3. 缺失值填充 (用全局 CTR) ---
+        global_ctr = train_df[target_col].mean()
+        train_df[f'{col}_te'].fillna(global_ctr, inplace=True)
+        test_df[f'{col}_te'].fillna(global_ctr, inplace=True)
+        
+        # 类型压缩
+        train_df[f'{col}_te'] = train_df[f'{col}_te'].astype('float32')
+        test_df[f'{col}_te'] = test_df[f'{col}_te'].astype('float32')
+        
+    return train_df, test_df
+def preprocess_data(train_df, test_df):
+    """数据预处理主流程"""
+    print("数据预处理...")
+    
+    # 1. 填充缺失值
+    train_df, test_df = fill_missing_values(train_df, test_df)
+    
+    # 2. 特征工程
+    train_df, test_df = add_transform_features(train_df, test_df)
+    
+    # 3. 低频类别处理
+    train_df, test_df = bucket_rare_categories(train_df, test_df)
+    
+    # 4. 删除不需要的列
+    drop_columns = ['temp_high', 'temp_low', 'geohash', 'work_geohash']
+    for col in drop_columns:
+        if col in train_df.columns:
+            train_df.drop(columns=[col], inplace=True)
+            test_df.drop(columns=[col], inplace=True, errors='ignore')
+    
+    # 5. Target Encoding
+    te_cols = ['userid', 'itemid', 'cityid', 'loc_cityid', 'cate_1', 'cate_2', 'dtype']
+    te_cols = [c for c in te_cols if c in train_df.columns]
+    train_df, test_df = add_kfold_target_encoding(train_df, test_df, te_cols, target_col='label', n_folds=5)
+    
+    # 6. 类别特征编码
+    drop_raw_ids = ['userid', 'sample_index', 'label']
+    
+    categorical_features = [
+        'itemid', 'cityid', 'loc_cityid', 'weekday', 'hour', 'weather', 
+        'dtype', 'cate_1', 'cate_2', 'cate_3', 'age', 'level', 'gender', 
+        'married', 'job', 'has_car', 'mobile_type', 'mobile_os', 'timeslot'
+    ]
+    categorical_features = [col for col in categorical_features if col in train_df.columns]
+    
+    print(f"执行 Label Encoding: {categorical_features}...")
+    for col in categorical_features:
+        train_df[col] = train_df[col].astype(str).fillna('unknown')
+        test_df[col] = test_df[col].astype(str).fillna('unknown')
+        
+        le = LabelEncoder()
+        all_values = list(set(list(train_df[col].unique()) + list(test_df[col].unique())))
+        le.fit(all_values)
+        
+        train_df[col] = le.transform(train_df[col])
+        test_df[col] = le.transform(test_df[col])
+        
+        train_df[col] = train_df[col].astype('category')
+        test_df[col] = test_df[col].astype('category')
+    
+    # 7. 内存优化
+    train_df = reduce_mem_usage(train_df)
+    test_df = reduce_mem_usage(test_df)
+    
+    # 8. 确定最终特征
+    feature_cols = [col for col in train_df.columns if col not in drop_raw_ids]
+    
+    print(f"最终特征数量: {len(feature_cols)}")
+    
+    X_train = train_df[feature_cols]
+    y_train = train_df['label']
+    X_test = test_df[feature_cols]
+    
+    return X_train, y_train, X_test, feature_cols, categorical_features
+
+    
+    # --- 1. 基础特征工程：Count Encoding ---
+    # 注意：这里先做Count Encoding，保留原始ID的频次特征（即使是低频的，其具体频次1,2,3...也是有用的信息）
+    count_features = ['userid', 'itemid', 'cityid', 'loc_cityid', 'work_geohash']
+    for col in count_features:
+        if col in train_df.columns:
+            # 使用全局统计
+            combined = pd.concat([train_df[col], test_df[col]], axis=0)
+            counts = combined.value_counts()
+            
+            train_df[f'{col}_count'] = train_df[col].map(counts).fillna(0).astype('float32')
+            test_df[f'{col}_count'] = test_df[col].map(counts).fillna(0).astype('float32')
+
+    # --- [新增] 1.5 itemid 低频过滤 (High Cardinality Handling) ---
+    print("处理 itemid: 过滤低频 item (count < 8) -> UNK ...")
+    
+    # 统计全局 itemid 频次
+    all_items = pd.concat([train_df['itemid'], test_df['itemid']], axis=0)
+    item_freq = all_items.value_counts()
+    
+    # 获取出现次数 >= 8 的 item 集合
+    # 这样做的目的是让模型学到一个通用的 "生僻商品(UNK)" 的 embedding 或 split，而不是强行记忆只出现过1-2次的商品
+    valid_items = set(item_freq[item_freq >= 8].index)
+    
+    # 为了统一类型，先转为字符串
+    train_df['itemid'] = train_df['itemid'].astype(str)
+    test_df['itemid'] = test_df['itemid'].astype(str)
+    
+    # 使用 apply 或者 where 进行替换 (使用 set 查找速度很快)
+    # 如果 item 不在 valid_items 中，替换为 'UNK'
+    train_df.loc[~train_df['itemid'].isin(valid_items), 'itemid'] = 'UNK'
+    test_df.loc[~test_df['itemid'].isin(valid_items), 'itemid'] = 'UNK'
+    
+    print(f"Itemid 过滤完成。保留的独立Item数: {len(valid_items)}, 归为 'UNK' 的样本数: {(train_df['itemid']=='UNK').sum() + (test_df['itemid']=='UNK').sum()}")
+
+    # --- 2. 时间特征 ---
+    for df in [train_df, test_df]:
+        if 'timestamp' in df.columns:
+            df['timestamp_dt'] = pd.to_datetime(df['timestamp'], unit='s', errors='coerce')
+            df['hour'] = df['timestamp_dt'].dt.hour
+            df['weekday'] = df['timestamp_dt'].dt.weekday
+            # sin/cos 特征
+            df['hour_sin'] = np.sin(2 * np.pi * df['hour'] / 24).astype(np.float32)
+            df['hour_cos'] = np.cos(2 * np.pi * df['hour'] / 24).astype(np.float32)
+            df['weekday_sin'] = np.sin(2 * np.pi * df['weekday'] / 7).astype(np.float32)
+            df['weekday_cos'] = np.cos(2 * np.pi * df['weekday'] / 7).astype(np.float32)
+            df.drop(['timestamp', 'timestamp_dt'], axis=1, inplace=True)
+
+    # --- 3. Target Encoding ---
+    # 'itemid' 现在的基数变小了（低频的都变成了UNK），Target Encoding 对 UNK 会计算出一个稳定的平均CTR
+    te_cols = ['userid', 'itemid', 'cityid', 'loc_cityid', 'cate_1', 'cate_2', 'geohash']
+    te_cols = [c for c in te_cols if c in train_df.columns]
+    
+    train_df, test_df = add_kfold_target_encoding(train_df, test_df, te_cols, target_col='label', n_folds=5)
+
+    # --- 4. 区分“纯ID”和“普通类别” ---
+    
+    # [修改] 从 drop 列表中移除 itemid，因为我们要保留它作为特征
+    drop_raw_ids = ['userid', 'geohash', 'work_geohash', 'sample_index', 'label'] 
+    
+    # [修改] 将 itemid 加入到类别特征候选中
+    all_cat_candidates = [
+        'itemid', # <--- 新增
+        'cityid', 'loc_cityid',
+        'weekday', 'hour', 'weather', 'dtype', 'cate_1', 'cate_2', 'cate_3',
+        'age', 'level', 'gender', 'married', 'job', 'has_car', 
+        'mobile_type', 'mobile_os'
+    ]
+    
+    # 最终确定要 Label Encode 的列
+    categorical_features = [col for col in all_cat_candidates if col in train_df.columns]
+
+    print(f"执行 Label Encoding: {categorical_features}...")
+    for col in categorical_features:
+        # 填充 NaN
+        train_df[col] = train_df[col].astype(str).fillna('unknown')
+        test_df[col] = test_df[col].astype(str).fillna('unknown')
+        
+        le = LabelEncoder()
+        # 拼接训练和测试集的唯一值，防止 unseen label
+        all_values = list(train_df[col].unique()) + list(test_df[col].unique())
+        le.fit(list(set(all_values))) # 使用 set 加速
+        
+        train_df[col] = le.transform(train_df[col])
+        test_df[col] = le.transform(test_df[col])
+        
+        # 转为 category 类型 (LightGBM 专属优化)
+        train_df[col] = train_df[col].astype('category')
+        test_df[col] = test_df[col].astype('category')
+
+    # --- 5. 内存优化 ---
+    train_df = reduce_mem_usage(train_df)
+    test_df = reduce_mem_usage(test_df)
+    
+    # --- 6. 确定最终特征 ---
+    feature_cols = [col for col in train_df.columns if col not in drop_raw_ids]
+    
+    print(f"最终特征数量: {len(feature_cols)}")
+    print(feature_cols)
+    # print(f"使用的特征: {feature_cols}")
+    
+    X_train = train_df[feature_cols]
+    y_train = train_df['label']
+    X_test = test_df[feature_cols]
+    
+    return X_train, y_train, X_test, feature_cols, categorical_features
+
+def train_lgb_cv(X, y, X_test, categorical_features, n_splits=5):
+    """LightGBM K折交叉验证"""
+    
+    # 获取weekday用于分层
+    weekdays = X['weekday'] if 'weekday' in X.columns else np.zeros(len(X))
+    unique_weekdays = sorted(weekdays.unique())
+    print(f"Stratified by Weekday: {unique_weekdays}")
+
+    # 自定义分层索引逻辑 (和CatBoost脚本保持一致)
+    folds = [[] for _ in range(n_splits)]
+    for wd in unique_weekdays:
+        idx = X[X['weekday'] == wd].index.tolist()
+        np.random.shuffle(idx)
+        fold_size = len(idx) // n_splits
+        for i in range(n_splits):
+            start = i * fold_size
+            end = (i + 1) * fold_size if i < n_splits - 1 else len(idx)
+            folds[i].extend(idx[start:end])
+    
+    # LGBM 参数 - 强化防过拟合配置
+    params = {
+        'objective': 'binary',
+        'metric': 'auc',
+        'boosting_type': 'gbdt',
+        'learning_rate': 0.02,        # 降低学习率,从0.03->0.02
+        'num_leaves': 31,             # 大幅降低叶子数,从64->31
+        'max_depth': 6,               # 限制树深度,从-1->6
+        'min_child_samples': 100,     # 增加最少样本数,从50->100
+        'min_child_weight': 0.01,     # 添加叶子节点最小权重
+        'feature_fraction': 0.7,      # 减少特征采样,从0.8->0.7
+        'bagging_fraction': 0.7,      # 减少数据采样,从0.8->0.7
+        'bagging_freq': 5,            # 每5轮做一次bagging
+        'lambda_l1': 1.0,             # 大幅增加L1正则,从0.1->1.0
+        'lambda_l2': 2.0,             # 大幅增加L2正则,从0.2->2.0
+        'min_gain_to_split': 0.02,    # 添加分裂最小增益
+        'max_bin': 255,               # 限制最大bin数
+        'n_jobs': -1,
+        'seed': 42,
+        'verbose': -1,
+        # 'device': 'gpu',            # 如果有GPU,取消注释
+        # 'gpu_platform_id': 0,
+        # 'gpu_device_id': 0
+    }
+    
+    oof_preds = np.zeros(X.shape[0])
+    test_preds = np.zeros(X_test.shape[0])
+    cv_scores = []
+    
+    print(f"开始 {n_splits} 折训练...")
+    
+    for fold in range(n_splits):
+        val_idx = folds[fold]
+        train_idx = []
+        for f in range(n_splits):
+            if f != fold: train_idx.extend(folds[f])
+            
+        X_tr, y_tr = X.iloc[train_idx], y.iloc[train_idx]
+        X_val, y_val = X.iloc[val_idx], y.iloc[val_idx]
+        
+        # 创建 Dataset
+        dtrain = lgb.Dataset(X_tr, label=y_tr, categorical_feature=categorical_features)
+        dval = lgb.Dataset(X_val, label=y_val, categorical_feature=categorical_features, reference=dtrain)
+        
+        # 回调函数 - 缩短早停轮数
+        callbacks = [
+            lgb.log_evaluation(period=100),
+            lgb.early_stopping(stopping_rounds=50)  # 从100->50,更早停止
+        ]
+        
+        model = lgb.train(
+            params,
+            dtrain,
+            num_boost_round=2000,  # 降低最大轮数,从10000->2000
+            valid_sets=[dtrain, dval],
+            valid_names=['train', 'valid'],
+            callbacks=callbacks
+        )
+        
+        # 预测验证集
+        val_pred = model.predict(X_val, num_iteration=model.best_iteration)
+        oof_preds[val_idx] = val_pred
+        
+        # 预测测试集
+        test_preds += model.predict(X_test, num_iteration=model.best_iteration) / n_splits
+        
+        score = roc_auc_score(y_val, val_pred)
+        cv_scores.append(score)
+        print(f"Fold {fold+1} AUC: {score:.4f}")
+        
+        # 内存清理
+        del X_tr, y_tr, X_val, y_val, dtrain, dval, model
+        gc.collect()
+        
+    print(f"\nCV Mean AUC: {np.mean(cv_scores):.4f} ± {np.std(cv_scores):.4f}")
+    return test_preds, oof_preds
+
+def main():
+    train_df, test_df = load_data()
+    
+    # 预处理
+    X_train, y_train, X_test, feature_cols, categorical_features = preprocess_data(train_df, test_df)
+    
+    # 训练
+    lgb_preds, lgb_oof = train_lgb_cv(X_train, y_train, X_test, categorical_features, n_splits=10)
+    
+    # 保存结果
+    submission = pd.DataFrame({
+        'sample_index': range(len(lgb_preds)),
+        'label': lgb_preds
+    })
+    submission.to_csv('submission_lgb.csv', index=False)
+    print("LightGBM 预测结果已保存至 submission_lgb.csv")
+
+
+if __name__ == "__main__":
+    main()

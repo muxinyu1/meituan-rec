@@ -3,3 +3,6 @@ catboost_info
 data
 .vscode
 *.cbm
+*.z01
+*.z02
+*.zip
