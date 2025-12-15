@@ -214,8 +214,9 @@ def ensemble_predict(models, X_test, categorical_features):
 def load_data():
     """加载训练和测试数据"""
     print("加载数据...")
-    train_df = pd.read_csv('train.csv')
-    test_df = pd.read_csv('test.csv')
+    base_dir = "/media/wenhao/7d8f46ef-9674-40b1-a999-148b79a69954/zhaoshanhui/meituan-rec"
+    train_df = pd.read_csv(os.path.join(base_dir, 'train.csv'))
+    test_df = pd.read_csv(os.path.join(base_dir, 'test.csv'))
     
     print(f"训练集大小: {train_df.shape}")
     print(f"测试集大小: {test_df.shape}")

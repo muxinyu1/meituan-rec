@@ -1,0 +1,461 @@
+6    218490
+7    254045
+Name: count, dtype: int64
+验证集weekday分布:
+weekday
+1    28111
+2    24403
+3    24576
+4    25016
+5    24252
+6    24276
+7    28227
+Name: count, dtype: int64
+准备数据池 (Pool)...
+验证集Pool已创建，大小: (178861, 40)
+Pool 已创建，释放原始 DataFrame 内存...
+开始训练 CatBoost 模型...
+0:      test: 0.6549681 best: 0.6549681 (0)     total: 654ms    remaining: 2h 43m 30s
+100:    test: 0.6664241 best: 0.6664241 (100)   total: 1m 1s    remaining: 2h 31m 59s
+200:    test: 0.6672816 best: 0.6672816 (200)   total: 1m 56s   remaining: 2h 22m 49s
+300:    test: 0.6686429 best: 0.6686429 (300)   total: 2m 56s   remaining: 2h 23m 21s
+400:    test: 0.6690650 best: 0.6690665 (399)   total: 3m 54s   remaining: 2h 22m 20s
+500:    test: 0.6694132 best: 0.6694140 (498)   total: 4m 53s   remaining: 2h 21m 21s
+600:    test: 0.6696784 best: 0.6696784 (600)   total: 5m 51s   remaining: 2h 20m 18s
+700:    test: 0.6699318 best: 0.6699318 (700)   total: 6m 49s   remaining: 2h 19m 15s
+800:    test: 0.6700143 best: 0.6700156 (787)   total: 7m 47s   remaining: 2h 18m 10s
+900:    test: 0.6701199 best: 0.6701199 (900)   total: 8m 45s   remaining: 2h 17m 9s
+1000:   test: 0.6702558 best: 0.6702573 (999)   total: 9m 44s   remaining: 2h 16m 13s
+1100:   test: 0.6703364 best: 0.6703364 (1100)  total: 10m 42s  remaining: 2h 15m 15s
+1200:   test: 0.6703807 best: 0.6703860 (1196)  total: 11m 40s  remaining: 2h 14m 8s
+1300:   test: 0.6704312 best: 0.6704312 (1300)  total: 12m 38s  remaining: 2h 13m 10s
+1400:   test: 0.6704661 best: 0.6704680 (1379)  total: 13m 37s  remaining: 2h 12m 10s
+1500:   test: 0.6705193 best: 0.6705195 (1499)  total: 14m 35s  remaining: 2h 11m 16s
+1600:   test: 0.6705908 best: 0.6705908 (1600)  total: 15m 34s  remaining: 2h 10m 22s
+1700:   test: 0.6706368 best: 0.6706373 (1685)  total: 16m 33s  remaining: 2h 9m 23s
+1800:   test: 0.6706581 best: 0.6706628 (1768)  total: 17m 31s  remaining: 2h 8m 27s
+1900:   test: 0.6706691 best: 0.6706699 (1857)  total: 18m 29s  remaining: 2h 7m 26s
+2000:   test: 0.6707119 best: 0.6707120 (1998)  total: 19m 28s  remaining: 2h 6m 31s
+2100:   test: 0.6707526 best: 0.6707526 (2100)  total: 20m 27s  remaining: 2h 5m 34s
+2200:   test: 0.6707726 best: 0.6707743 (2190)  total: 21m 25s  remaining: 2h 4m 34s
+2300:   test: 0.6707790 best: 0.6707793 (2291)  total: 22m 23s  remaining: 2h 3m 35s
+2400:   test: 0.6707806 best: 0.6707827 (2398)  total: 23m 22s  remaining: 2h 2m 39s
+2500:   test: 0.6708301 best: 0.6708301 (2500)  total: 24m 21s  remaining: 2h 1m 45s
+2600:   test: 0.6708454 best: 0.6708465 (2596)  total: 25m 20s  remaining: 2h 48s
+2700:   test: 0.6708659 best: 0.6708659 (2700)  total: 26m 19s  remaining: 1h 59m 52s
+2800:   test: 0.6708606 best: 0.6708663 (2703)  total: 27m 18s  remaining: 1h 58m 54s
+2900:   test: 0.6708640 best: 0.6708672 (2876)  total: 28m 17s  remaining: 1h 57m 59s
+3000:   test: 0.6708542 best: 0.6708672 (2876)  total: 29m 16s  remaining: 1h 57m 2s
+3100:   test: 0.6708212 best: 0.6708672 (2876)  total: 30m 15s  remaining: 1h 56m 7s
+3200:   test: 0.6708215 best: 0.6708672 (2876)  total: 31m 15s  remaining: 1h 55m 12s
+3300:   test: 0.6708193 best: 0.6708672 (2876)  total: 32m 14s  remaining: 1h 54m 14s
+bestTest = 0.6708672047
+bestIteration = 2876
+Shrink model to first 2877 iterations.
+最佳迭代轮数: 2876
+
+第5折最终验证集AUC: 0.6709
+
+============================================================
+第6/10折交叉验证
+============================================================
+训练集大小: (1609776, 40), 正样本比例: 0.3078
+验证集大小: (178861, 40), 正样本比例: 0.3081
+训练集weekday分布:
+weekday
+1    253005
+2    219629
+3    221189
+4    225150
+5    218268
+6    218490
+7    254045
+Name: count, dtype: int64
+验证集weekday分布:
+weekday
+1    28111
+2    24403
+3    24576
+4    25016
+5    24252
+6    24276
+7    28227
+Name: count, dtype: int64
+准备数据池 (Pool)...
+验证集Pool已创建，大小: (178861, 40)
+Pool 已创建，释放原始 DataFrame 内存...
+开始训练 CatBoost 模型...
+0:      test: 0.6545962 best: 0.6545962 (0)     total: 656ms    remaining: 2h 44m 1s
+100:    test: 0.6664676 best: 0.6664676 (100)   total: 1m 1s    remaining: 2h 31m 50s
+200:    test: 0.6674671 best: 0.6674671 (200)   total: 1m 59s   remaining: 2h 26m 28s
+300:    test: 0.6684698 best: 0.6684698 (299)   total: 2m 58s   remaining: 2h 25m 36s
+400:    test: 0.6687818 best: 0.6687821 (399)   total: 3m 57s   remaining: 2h 24m 12s
+500:    test: 0.6691106 best: 0.6691106 (500)   total: 4m 56s   remaining: 2h 23m 10s
+600:    test: 0.6692651 best: 0.6692667 (593)   total: 5m 55s   remaining: 2h 21m 49s
+700:    test: 0.6693926 best: 0.6693927 (696)   total: 6m 53s   remaining: 2h 20m 28s
+800:    test: 0.6695200 best: 0.6695235 (796)   total: 7m 52s   remaining: 2h 19m 26s
+900:    test: 0.6695938 best: 0.6695938 (900)   total: 8m 51s   remaining: 2h 18m 30s
+1000:   test: 0.6697331 best: 0.6697348 (993)   total: 9m 49s   remaining: 2h 17m 26s
+1100:   test: 0.6698674 best: 0.6698675 (1099)  total: 10m 48s  remaining: 2h 16m 26s
+1200:   test: 0.6699363 best: 0.6699363 (1200)  total: 11m 47s  remaining: 2h 15m 30s
+1300:   test: 0.6699861 best: 0.6699861 (1300)  total: 12m 46s  remaining: 2h 14m 26s
+1400:   test: 0.6699898 best: 0.6699994 (1361)  total: 13m 43s  remaining: 2h 13m 18s
+1500:   test: 0.6700464 best: 0.6700465 (1492)  total: 14m 42s  remaining: 2h 12m 18s
+1600:   test: 0.6700894 best: 0.6700894 (1599)  total: 15m 41s  remaining: 2h 11m 15s
+1700:   test: 0.6701055 best: 0.6701058 (1691)  total: 16m 39s  remaining: 2h 10m 16s
+1800:   test: 0.6701080 best: 0.6701168 (1745)  total: 17m 38s  remaining: 2h 9m 13s
+1900:   test: 0.6701621 best: 0.6701695 (1894)  total: 18m 36s  remaining: 2h 8m 12s
+2000:   test: 0.6701775 best: 0.6701847 (1976)  total: 19m 34s  remaining: 2h 7m 12s
+2100:   test: 0.6701952 best: 0.6702086 (2098)  total: 20m 33s  remaining: 2h 6m 11s
+2200:   test: 0.6701914 best: 0.6702086 (2098)  total: 21m 31s  remaining: 2h 5m 10s
+2300:   test: 0.6702101 best: 0.6702111 (2297)  total: 22m 30s  remaining: 2h 4m 14s
+2400:   test: 0.6702227 best: 0.6702234 (2394)  total: 23m 30s  remaining: 2h 3m 20s
+2500:   test: 0.6702339 best: 0.6702386 (2499)  total: 24m 29s  remaining: 2h 2m 24s
+2600:   test: 0.6702434 best: 0.6702454 (2557)  total: 25m 28s  remaining: 2h 1m 27s
+2700:   test: 0.6702633 best: 0.6702637 (2694)  total: 26m 27s  remaining: 2h 29s
+2800:   test: 0.6702879 best: 0.6702879 (2800)  total: 27m 26s  remaining: 1h 59m 31s
+2900:   test: 0.6703004 best: 0.6703007 (2896)  total: 28m 25s  remaining: 1h 58m 33s
+3000:   test: 0.6702946 best: 0.6703007 (2896)  total: 29m 24s  remaining: 1h 57m 33s
+3100:   test: 0.6703080 best: 0.6703117 (3098)  total: 30m 23s  remaining: 1h 56m 35s
+3200:   test: 0.6703289 best: 0.6703289 (3200)  total: 31m 22s  remaining: 1h 55m 38s
+3300:   test: 0.6703406 best: 0.6703406 (3299)  total: 32m 21s  remaining: 1h 54m 40s
+3400:   test: 0.6703610 best: 0.6703672 (3364)  total: 33m 19s  remaining: 1h 53m 39s
+3500:   test: 0.6703831 best: 0.6703834 (3460)  total: 34m 18s  remaining: 1h 52m 40s
+3600:   test: 0.6703990 best: 0.6704026 (3580)  total: 35m 16s  remaining: 1h 51m 40s
+3700:   test: 0.6704127 best: 0.6704127 (3700)  total: 36m 15s  remaining: 1h 50m 41s
+3800:   test: 0.6704143 best: 0.6704211 (3723)  total: 37m 14s  remaining: 1h 49m 45s
+3900:   test: 0.6704317 best: 0.6704328 (3896)  total: 38m 13s  remaining: 1h 48m 45s
+4000:   test: 0.6704339 best: 0.6704378 (3989)  total: 39m 13s  remaining: 1h 47m 50s
+4100:   test: 0.6704385 best: 0.6704417 (4084)  total: 40m 12s  remaining: 1h 46m 51s
+4200:   test: 0.6704370 best: 0.6704432 (4135)  total: 41m 11s  remaining: 1h 45m 54s
+4300:   test: 0.6704530 best: 0.6704595 (4254)  total: 42m 11s  remaining: 1h 44m 57s
+4400:   test: 0.6704381 best: 0.6704595 (4254)  total: 43m 11s  remaining: 1h 44m
+4500:   test: 0.6704361 best: 0.6704595 (4254)  total: 44m 9s   remaining: 1h 43m
+4600:   test: 0.6704397 best: 0.6704595 (4254)  total: 45m 8s   remaining: 1h 42m 2s
+4700:   test: 0.6704372 best: 0.6704595 (4254)  total: 46m 7s   remaining: 1h 41m 3s
+bestTest = 0.6704595089
+bestIteration = 4254
+Shrink model to first 4255 iterations.
+最佳迭代轮数: 4254
+
+第6折最终验证集AUC: 0.6705
+
+============================================================
+第7/10折交叉验证
+============================================================
+训练集大小: (1609776, 40), 正样本比例: 0.3078
+验证集大小: (178861, 40), 正样本比例: 0.3080
+训练集weekday分布:
+weekday
+1    253005
+2    219629
+3    221189
+4    225150
+5    218268
+6    218490
+7    254045
+Name: count, dtype: int64
+验证集weekday分布:
+weekday
+1    28111
+2    24403
+3    24576
+4    25016
+5    24252
+6    24276
+7    28227
+Name: count, dtype: int64
+准备数据池 (Pool)...
+验证集Pool已创建，大小: (178861, 40)
+Pool 已创建，释放原始 DataFrame 内存...
+开始训练 CatBoost 模型...
+0:      test: 0.6530362 best: 0.6530362 (0)     total: 662ms    remaining: 2h 45m 26s
+100:    test: 0.6639005 best: 0.6639005 (99)    total: 1m 1s    remaining: 2h 31m 36s
+200:    test: 0.6658072 best: 0.6658072 (200)   total: 2m       remaining: 2h 28m 9s
+300:    test: 0.6664651 best: 0.6664651 (300)   total: 2m 59s   remaining: 2h 26m 25s
+400:    test: 0.6668894 best: 0.6668899 (399)   total: 3m 59s   remaining: 2h 25m 18s
+500:    test: 0.6671629 best: 0.6671629 (500)   total: 4m 58s   remaining: 2h 23m 56s
+600:    test: 0.6673175 best: 0.6673175 (600)   total: 5m 57s   remaining: 2h 22m 41s
+700:    test: 0.6674339 best: 0.6674357 (696)   total: 6m 56s   remaining: 2h 21m 35s
+800:    test: 0.6675014 best: 0.6675017 (797)   total: 7m 55s   remaining: 2h 20m 22s
+900:    test: 0.6675800 best: 0.6675800 (900)   total: 8m 54s   remaining: 2h 19m 16s
+1000:   test: 0.6676536 best: 0.6676541 (999)   total: 9m 52s   remaining: 2h 18m 10s
+1100:   test: 0.6676882 best: 0.6676895 (1096)  total: 10m 51s  remaining: 2h 17m 3s
+1200:   test: 0.6677269 best: 0.6677269 (1200)  total: 11m 49s  remaining: 2h 15m 57s
+1300:   test: 0.6677826 best: 0.6677828 (1299)  total: 12m 48s  remaining: 2h 14m 52s
+1400:   test: 0.6678439 best: 0.6678440 (1399)  total: 13m 46s  remaining: 2h 13m 42s
+1500:   test: 0.6678548 best: 0.6678605 (1471)  total: 14m 44s  remaining: 2h 12m 36s
+1600:   test: 0.6678782 best: 0.6678782 (1600)  total: 15m 42s  remaining: 2h 11m 31s
+1700:   test: 0.6679342 best: 0.6679342 (1700)  total: 16m 41s  remaining: 2h 10m 32s
+1800:   test: 0.6679873 best: 0.6679894 (1771)  total: 17m 40s  remaining: 2h 9m 35s
+1900:   test: 0.6679919 best: 0.6679927 (1896)  total: 18m 39s  remaining: 2h 8m 32s
+2000:   test: 0.6680022 best: 0.6680088 (1998)  total: 19m 38s  remaining: 2h 7m 33s
+2100:   test: 0.6680010 best: 0.6680160 (2037)  total: 20m 36s  remaining: 2h 6m 32s
+2200:   test: 0.6679981 best: 0.6680160 (2037)  total: 21m 35s  remaining: 2h 5m 34s
+2300:   test: 0.6680006 best: 0.6680160 (2037)  total: 22m 34s  remaining: 2h 4m 35s
+2400:   test: 0.6680164 best: 0.6680201 (2397)  total: 23m 33s  remaining: 2h 3m 36s
+2500:   test: 0.6680045 best: 0.6680201 (2397)  total: 24m 32s  remaining: 2h 2m 38s
+2600:   test: 0.6680219 best: 0.6680287 (2589)  total: 25m 31s  remaining: 2h 1m 40s
+2700:   test: 0.6680316 best: 0.6680316 (2700)  total: 26m 31s  remaining: 2h 45s
+2800:   test: 0.6680434 best: 0.6680452 (2768)  total: 27m 30s  remaining: 1h 59m 46s
+2900:   test: 0.6680527 best: 0.6680543 (2899)  total: 28m 29s  remaining: 1h 58m 49s
+3000:   test: 0.6680597 best: 0.6680622 (2971)  total: 29m 28s  remaining: 1h 57m 52s
+3100:   test: 0.6680804 best: 0.6680851 (3071)  total: 30m 27s  remaining: 1h 56m 52s
+3200:   test: 0.6680695 best: 0.6680851 (3071)  total: 31m 26s  remaining: 1h 55m 53s
+3300:   test: 0.6680740 best: 0.6680851 (3071)  total: 32m 25s  remaining: 1h 54m 55s
+3400:   test: 0.6680752 best: 0.6680851 (3071)  total: 33m 24s  remaining: 1h 53m 55s
+3500:   test: 0.6680812 best: 0.6680851 (3071)  total: 34m 24s  remaining: 1h 52m 59s
+3600:   test: 0.6681279 best: 0.6681303 (3593)  total: 35m 23s  remaining: 1h 52m 2s
+3700:   test: 0.6681489 best: 0.6681490 (3699)  total: 36m 23s  remaining: 1h 51m 4s
+3800:   test: 0.6681602 best: 0.6681611 (3780)  total: 37m 22s  remaining: 1h 50m 7s
+3900:   test: 0.6681590 best: 0.6681647 (3829)  total: 38m 21s  remaining: 1h 49m 8s
+4000:   test: 0.6681722 best: 0.6681755 (3999)  total: 39m 20s  remaining: 1h 48m 10s
+4100:   test: 0.6681747 best: 0.6681799 (4045)  total: 40m 20s  remaining: 1h 47m 13s
+4200:   test: 0.6681949 best: 0.6681960 (4175)  total: 41m 19s  remaining: 1h 46m 14s
+4300:   test: 0.6682014 best: 0.6682060 (4218)  total: 42m 19s  remaining: 1h 45m 16s
+4400:   test: 0.6681945 best: 0.6682060 (4218)  total: 43m 18s  remaining: 1h 44m 17s
+4500:   test: 0.6681914 best: 0.6682060 (4218)  total: 44m 17s  remaining: 1h 43m 18s
+4600:   test: 0.6681758 best: 0.6682060 (4218)  total: 45m 15s  remaining: 1h 42m 17s
+4700:   test: 0.6681805 best: 0.6682060 (4218)  total: 46m 14s  remaining: 1h 41m 18s
+bestTest = 0.6682060361
+bestIteration = 4218
+Shrink model to first 4219 iterations.
+最佳迭代轮数: 4218
+
+第7折最终验证集AUC: 0.6682
+
+============================================================
+第8/10折交叉验证
+============================================================
+训练集大小: (1609776, 40), 正样本比例: 0.3078
+验证集大小: (178861, 40), 正样本比例: 0.3087
+训练集weekday分布:
+weekday
+1    253005
+2    219629
+3    221189
+4    225150
+5    218268
+6    218490
+7    254045
+Name: count, dtype: int64
+验证集weekday分布:
+weekday
+1    28111
+2    24403
+3    24576
+4    25016
+5    24252
+6    24276
+7    28227
+Name: count, dtype: int64
+准备数据池 (Pool)...
+验证集Pool已创建，大小: (178861, 40)
+Pool 已创建，释放原始 DataFrame 内存...
+开始训练 CatBoost 模型...
+0:      test: 0.6549529 best: 0.6549529 (0)     total: 661ms    remaining: 2h 45m 21s
+100:    test: 0.6665145 best: 0.6665145 (100)   total: 1m 1s    remaining: 2h 31m 27s
+200:    test: 0.6680437 best: 0.6680439 (198)   total: 1m 59s   remaining: 2h 26m 18s
+300:    test: 0.6689826 best: 0.6689826 (300)   total: 2m 58s   remaining: 2h 25m 1s
+400:    test: 0.6695125 best: 0.6695125 (400)   total: 3m 57s   remaining: 2h 24m 3s
+500:    test: 0.6698195 best: 0.6698195 (500)   total: 4m 56s   remaining: 2h 23m 10s
+600:    test: 0.6700249 best: 0.6700249 (600)   total: 5m 55s   remaining: 2h 22m 7s
+700:    test: 0.6700982 best: 0.6700987 (683)   total: 6m 54s   remaining: 2h 20m 49s
+800:    test: 0.6701867 best: 0.6701912 (792)   total: 7m 52s   remaining: 2h 19m 38s
+900:    test: 0.6702553 best: 0.6702553 (900)   total: 8m 52s   remaining: 2h 18m 46s
+1000:   test: 0.6703179 best: 0.6703195 (995)   total: 9m 50s   remaining: 2h 17m 36s
+1100:   test: 0.6703522 best: 0.6703525 (1099)  total: 10m 49s  remaining: 2h 16m 35s
+1200:   test: 0.6704259 best: 0.6704259 (1200)  total: 11m 47s  remaining: 2h 15m 30s
+1300:   test: 0.6704645 best: 0.6704704 (1268)  total: 12m 46s  remaining: 2h 14m 28s
+1400:   test: 0.6705061 best: 0.6705061 (1399)  total: 13m 44s  remaining: 2h 13m 24s
+1500:   test: 0.6705253 best: 0.6705266 (1498)  total: 14m 43s  remaining: 2h 12m 27s
+1600:   test: 0.6705449 best: 0.6705488 (1592)  total: 15m 42s  remaining: 2h 11m 29s
+1700:   test: 0.6705981 best: 0.6705993 (1693)  total: 16m 41s  remaining: 2h 10m 31s
+1800:   test: 0.6706064 best: 0.6706115 (1789)  total: 17m 40s  remaining: 2h 9m 32s
+1900:   test: 0.6706199 best: 0.6706229 (1897)  total: 18m 39s  remaining: 2h 8m 36s
+2000:   test: 0.6706208 best: 0.6706232 (1949)  total: 19m 38s  remaining: 2h 7m 38s
+2100:   test: 0.6706170 best: 0.6706249 (2079)  total: 20m 38s  remaining: 2h 6m 40s
+2200:   test: 0.6706512 best: 0.6706546 (2182)  total: 21m 37s  remaining: 2h 5m 42s
+2300:   test: 0.6706610 best: 0.6706640 (2260)  total: 22m 35s  remaining: 2h 4m 40s
+2400:   test: 0.6706602 best: 0.6706721 (2330)  total: 23m 34s  remaining: 2h 3m 40s
+2500:   test: 0.6706812 best: 0.6706812 (2499)  total: 24m 33s  remaining: 2h 2m 44s
+2600:   test: 0.6706471 best: 0.6706823 (2501)  total: 25m 32s  remaining: 2h 1m 46s
+2700:   test: 0.6706277 best: 0.6706823 (2501)  total: 26m 32s  remaining: 2h 53s
+2800:   test: 0.6706600 best: 0.6706823 (2501)  total: 27m 32s  remaining: 1h 59m 58s
+2900:   test: 0.6706333 best: 0.6706823 (2501)  total: 28m 32s  remaining: 1h 59m
+3000:   test: 0.6706381 best: 0.6706823 (2501)  total: 29m 31s  remaining: 1h 58m 4s
+bestTest = 0.6706822813
+bestIteration = 2501
+Shrink model to first 2502 iterations.
+最佳迭代轮数: 2501
+
+第8折最终验证集AUC: 0.6707
+
+============================================================
+第9/10折交叉验证
+============================================================
+训练集大小: (1609776, 40), 正样本比例: 0.3078
+验证集大小: (178861, 40), 正样本比例: 0.3084
+训练集weekday分布:
+weekday
+1    253005
+2    219629
+3    221189
+4    225150
+5    218268
+6    218490
+7    254045
+Name: count, dtype: int64
+验证集weekday分布:
+weekday
+1    28111
+2    24403
+3    24576
+4    25016
+5    24252
+6    24276
+7    28227
+Name: count, dtype: int64
+准备数据池 (Pool)...
+验证集Pool已创建，大小: (178861, 40)
+Pool 已创建，释放原始 DataFrame 内存...
+开始训练 CatBoost 模型...
+0:      test: 0.6551645 best: 0.6551645 (0)     total: 647ms    remaining: 2h 41m 49s
+100:    test: 0.6645028 best: 0.6645028 (100)   total: 1m 1s    remaining: 2h 30m 43s
+200:    test: 0.6663744 best: 0.6663744 (200)   total: 2m       remaining: 2h 27m 46s
+300:    test: 0.6671715 best: 0.6671715 (300)   total: 3m       remaining: 2h 26m 47s
+400:    test: 0.6674706 best: 0.6674706 (398)   total: 3m 59s   remaining: 2h 25m 15s
+500:    test: 0.6676993 best: 0.6676993 (500)   total: 4m 58s   remaining: 2h 23m 59s
+600:    test: 0.6677864 best: 0.6677875 (599)   total: 5m 57s   remaining: 2h 22m 41s
+700:    test: 0.6678630 best: 0.6678653 (678)   total: 6m 56s   remaining: 2h 21m 28s
+800:    test: 0.6679434 best: 0.6679482 (781)   total: 7m 55s   remaining: 2h 20m 33s
+900:    test: 0.6680130 best: 0.6680136 (899)   total: 8m 54s   remaining: 2h 19m 24s
+1000:   test: 0.6681167 best: 0.6681167 (1000)  total: 9m 53s   remaining: 2h 18m 16s
+1100:   test: 0.6681731 best: 0.6681761 (1076)  total: 10m 52s  remaining: 2h 17m 16s
+1200:   test: 0.6681932 best: 0.6681934 (1199)  total: 11m 51s  remaining: 2h 16m 12s
+1300:   test: 0.6682445 best: 0.6682470 (1297)  total: 12m 50s  remaining: 2h 15m 12s
+1400:   test: 0.6682893 best: 0.6682893 (1400)  total: 13m 49s  remaining: 2h 14m 15s
+1500:   test: 0.6683174 best: 0.6683196 (1492)  total: 14m 49s  remaining: 2h 13m 17s
+1600:   test: 0.6683429 best: 0.6683433 (1597)  total: 15m 47s  remaining: 2h 12m 11s
+1700:   test: 0.6683607 best: 0.6683645 (1692)  total: 16m 45s  remaining: 2h 11m
+1800:   test: 0.6683896 best: 0.6683899 (1799)  total: 17m 44s  remaining: 2h 9m 59s
+1900:   test: 0.6684105 best: 0.6684105 (1900)  total: 18m 43s  remaining: 2h 9m
+2000:   test: 0.6684154 best: 0.6684200 (1948)  total: 19m 40s  remaining: 2h 7m 49s
+2100:   test: 0.6684467 best: 0.6684467 (2100)  total: 20m 38s  remaining: 2h 6m 43s
+2200:   test: 0.6684589 best: 0.6684589 (2200)  total: 21m 36s  remaining: 2h 5m 41s
+2300:   test: 0.6685185 best: 0.6685187 (2298)  total: 22m 35s  remaining: 2h 4m 43s
+2400:   test: 0.6685324 best: 0.6685343 (2365)  total: 23m 35s  remaining: 2h 3m 46s
+2500:   test: 0.6685245 best: 0.6685346 (2406)  total: 24m 34s  remaining: 2h 2m 48s
+2600:   test: 0.6685315 best: 0.6685395 (2569)  total: 25m 33s  remaining: 2h 1m 49s
+2700:   test: 0.6685258 best: 0.6685395 (2569)  total: 26m 31s  remaining: 2h 46s
+2800:   test: 0.6685191 best: 0.6685395 (2569)  total: 27m 30s  remaining: 1h 59m 46s
+2900:   test: 0.6684995 best: 0.6685395 (2569)  total: 28m 29s  remaining: 1h 58m 47s
+3000:   test: 0.6684988 best: 0.6685395 (2569)  total: 29m 27s  remaining: 1h 57m 48s
+bestTest = 0.6685395241
+bestIteration = 2569
+Shrink model to first 2570 iterations.
+最佳迭代轮数: 2569
+
+第9折最终验证集AUC: 0.6685
+
+============================================================
+第10/10折交叉验证
+============================================================
+训练集大小: (1609749, 40), 正样本比例: 0.3077
+验证集大小: (178888, 40), 正样本比例: 0.3093
+训练集weekday分布:
+weekday
+1    252999
+2    219627
+3    221184
+4    225144
+5    218268
+6    218484
+7    254043
+Name: count, dtype: int64
+验证集weekday分布:
+weekday
+1    28117
+2    24405
+3    24581
+4    25022
+5    24252
+6    24282
+7    28229
+Name: count, dtype: int64
+准备数据池 (Pool)...
+验证集Pool已创建，大小: (178888, 40)
+Pool 已创建，释放原始 DataFrame 内存...
+开始训练 CatBoost 模型...
+0:      test: 0.6530526 best: 0.6530526 (0)     total: 645ms    remaining: 2h 41m 14s
+100:    test: 0.6650622 best: 0.6650622 (100)   total: 1m       remaining: 2h 28m 14s
+200:    test: 0.6665143 best: 0.6665143 (200)   total: 1m 56s   remaining: 2h 22m 27s
+300:    test: 0.6676210 best: 0.6676210 (300)   total: 2m 55s   remaining: 2h 22m 55s
+400:    test: 0.6681387 best: 0.6681387 (400)   total: 3m 54s   remaining: 2h 22m 29s
+500:    test: 0.6684630 best: 0.6684633 (499)   total: 4m 53s   remaining: 2h 21m 36s
+600:    test: 0.6686815 best: 0.6686818 (598)   total: 5m 52s   remaining: 2h 20m 39s
+700:    test: 0.6688718 best: 0.6688727 (693)   total: 6m 51s   remaining: 2h 19m 55s
+800:    test: 0.6688865 best: 0.6688955 (728)   total: 7m 48s   remaining: 2h 18m 29s
+900:    test: 0.6690141 best: 0.6690142 (899)   total: 8m 47s   remaining: 2h 17m 39s
+1000:   test: 0.6691096 best: 0.6691096 (995)   total: 9m 45s   remaining: 2h 16m 32s
+1100:   test: 0.6691559 best: 0.6691559 (1100)  total: 10m 43s  remaining: 2h 15m 27s
+1200:   test: 0.6691741 best: 0.6691833 (1132)  total: 11m 41s  remaining: 2h 14m 23s
+1300:   test: 0.6692489 best: 0.6692513 (1299)  total: 12m 40s  remaining: 2h 13m 28s
+1400:   test: 0.6692884 best: 0.6692895 (1396)  total: 13m 39s  remaining: 2h 12m 33s
+1500:   test: 0.6693267 best: 0.6693271 (1480)  total: 14m 38s  remaining: 2h 11m 39s
+1600:   test: 0.6693531 best: 0.6693545 (1594)  total: 15m 37s  remaining: 2h 10m 46s
+1700:   test: 0.6693950 best: 0.6693962 (1695)  total: 16m 36s  remaining: 2h 9m 53s
+1800:   test: 0.6693971 best: 0.6693991 (1767)  total: 17m 34s  remaining: 2h 8m 49s
+1900:   test: 0.6694450 best: 0.6694476 (1899)  total: 18m 33s  remaining: 2h 7m 54s
+2000:   test: 0.6694818 best: 0.6694818 (2000)  total: 19m 32s  remaining: 2h 6m 57s
+2100:   test: 0.6694964 best: 0.6694964 (2099)  total: 20m 31s  remaining: 2h 6m 2s
+2200:   test: 0.6695012 best: 0.6695016 (2183)  total: 21m 30s  remaining: 2h 5m 3s
+2300:   test: 0.6695095 best: 0.6695179 (2260)  total: 22m 29s  remaining: 2h 4m 6s
+2400:   test: 0.6695244 best: 0.6695247 (2398)  total: 23m 28s  remaining: 2h 3m 9s
+2500:   test: 0.6695320 best: 0.6695338 (2464)  total: 24m 25s  remaining: 2h 2m 5s
+2600:   test: 0.6695504 best: 0.6695566 (2587)  total: 25m 24s  remaining: 2h 1m 6s
+2700:   test: 0.6695744 best: 0.6695744 (2696)  total: 26m 22s  remaining: 2h 5s
+2800:   test: 0.6695603 best: 0.6695746 (2714)  total: 27m 20s  remaining: 1h 59m 5s
+2900:   test: 0.6695696 best: 0.6695746 (2714)  total: 28m 17s  remaining: 1h 57m 59s
+3000:   test: 0.6695850 best: 0.6695870 (2997)  total: 29m 15s  remaining: 1h 57m
+3100:   test: 0.6696033 best: 0.6696048 (3097)  total: 30m 14s  remaining: 1h 56m 4s
+3200:   test: 0.6696369 best: 0.6696417 (3187)  total: 31m 14s  remaining: 1h 55m 10s
+3300:   test: 0.6696413 best: 0.6696430 (3271)  total: 32m 14s  remaining: 1h 54m 15s
+3400:   test: 0.6696556 best: 0.6696604 (3361)  total: 33m 14s  remaining: 1h 53m 21s
+3500:   test: 0.6696597 best: 0.6696652 (3428)  total: 34m 13s  remaining: 1h 52m 25s
+3600:   test: 0.6696597 best: 0.6696662 (3563)  total: 35m 11s  remaining: 1h 51m 24s
+3700:   test: 0.6696526 best: 0.6696662 (3563)  total: 36m 10s  remaining: 1h 50m 25s
+3800:   test: 0.6696749 best: 0.6696766 (3798)  total: 37m 9s   remaining: 1h 49m 27s
+3900:   test: 0.6696745 best: 0.6696813 (3838)  total: 38m 7s   remaining: 1h 48m 28s
+4000:   test: 0.6696763 best: 0.6696848 (3956)  total: 39m 6s   remaining: 1h 47m 29s
+4100:   test: 0.6696885 best: 0.6696900 (4081)  total: 40m 5s   remaining: 1h 46m 31s
+4200:   test: 0.6697010 best: 0.6697015 (4198)  total: 41m 3s   remaining: 1h 45m 33s
+4300:   test: 0.6697219 best: 0.6697230 (4298)  total: 42m 3s   remaining: 1h 44m 38s
+4400:   test: 0.6697230 best: 0.6697285 (4372)  total: 43m 2s   remaining: 1h 43m 39s
+4500:   test: 0.6697089 best: 0.6697285 (4372)  total: 44m 1s   remaining: 1h 42m 42s
+4600:   test: 0.6697047 best: 0.6697285 (4372)  total: 45m      remaining: 1h 41m 43s
+4700:   test: 0.6696949 best: 0.6697285 (4372)  total: 45m 59s  remaining: 1h 40m 46s
+4800:   test: 0.6696977 best: 0.6697285 (4372)  total: 46m 59s  remaining: 1h 39m 49s
+bestTest = 0.6697285473
+bestIteration = 4372
+Shrink model to first 4373 iterations.
+最佳迭代轮数: 4372
+
+第10折最终验证集AUC: 0.6697
+
+============================================================
+交叉验证结果汇总
+============================================================
+各折AUC: ['0.6700', '0.6684', '0.6688', '0.6702', '0.6709', '0.6705', '0.6682', '0.6707', '0.6685', '0.6697']
+平均AUC: 0.6696 ± 0.0010
+最大AUC: 0.6709
+最小AUC: 0.6682
+============================================================
+
+集成预测...
+预测结果已保存到 submission.csv
+保存模型和评估结果...
+模型已保存到 catboost_model.cbm
+评估结果已保存到 model_results.json
+CatBoost模型K折交叉验证训练完成！
+(meituan) > wenhao: meituan-rec (catboost) $ 

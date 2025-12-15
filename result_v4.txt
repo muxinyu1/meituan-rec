@@ -1,0 +1,292 @@
+ 6m 7s    remaining: 26m 38s
+2900:   test: 0.6876109 best: 0.6876109 (2900)  total: 6m 20s   remaining: 26m 26s
+3000:   test: 0.6882397 best: 0.6882421 (2995)  total: 6m 33s   remaining: 26m 12s
+3100:   test: 0.6886129 best: 0.6886129 (3100)  total: 6m 46s   remaining: 25m 59s
+3200:   test: 0.6888694 best: 0.6888698 (3198)  total: 6m 59s   remaining: 25m 46s
+3300:   test: 0.6891394 best: 0.6891403 (3299)  total: 7m 13s   remaining: 25m 35s
+3400:   test: 0.6894461 best: 0.6894461 (3400)  total: 7m 26s   remaining: 25m 23s
+3500:   test: 0.6897066 best: 0.6897068 (3499)  total: 7m 40s   remaining: 25m 11s
+3600:   test: 0.6899057 best: 0.6899068 (3599)  total: 7m 53s   remaining: 24m 58s
+3700:   test: 0.6901152 best: 0.6901152 (3700)  total: 8m 6s    remaining: 24m 45s
+3800:   test: 0.6902027 best: 0.6902091 (3797)  total: 8m 20s   remaining: 24m 34s
+3900:   test: 0.6905164 best: 0.6905169 (3898)  total: 8m 33s   remaining: 24m 21s
+4000:   test: 0.6907707 best: 0.6907707 (4000)  total: 8m 46s   remaining: 24m 8s
+4100:   test: 0.6909053 best: 0.6909121 (4096)  total: 9m       remaining: 23m 56s
+4200:   test: 0.6909947 best: 0.6910008 (4188)  total: 9m 13s   remaining: 23m 44s
+4300:   test: 0.6911432 best: 0.6911511 (4296)  total: 9m 27s   remaining: 23m 31s
+4400:   test: 0.6912763 best: 0.6912771 (4380)  total: 9m 41s   remaining: 23m 19s
+4500:   test: 0.6914091 best: 0.6914245 (4469)  total: 9m 55s   remaining: 23m 8s
+4600:   test: 0.6915000 best: 0.6915000 (4600)  total: 10m 8s   remaining: 22m 55s
+4700:   test: 0.6916359 best: 0.6916413 (4695)  total: 10m 21s  remaining: 22m 42s
+4800:   test: 0.6917787 best: 0.6917787 (4800)  total: 10m 35s  remaining: 22m 30s
+4900:   test: 0.6918643 best: 0.6918669 (4897)  total: 10m 49s  remaining: 22m 17s
+5000:   test: 0.6920351 best: 0.6920351 (4997)  total: 11m 2s   remaining: 22m 5s
+5100:   test: 0.6922646 best: 0.6922646 (5100)  total: 11m 16s  remaining: 21m 52s
+5200:   test: 0.6923324 best: 0.6923476 (5180)  total: 11m 29s  remaining: 21m 39s
+5300:   test: 0.6924167 best: 0.6924174 (5299)  total: 11m 43s  remaining: 21m 27s
+5400:   test: 0.6925039 best: 0.6925067 (5398)  total: 11m 57s  remaining: 21m 14s
+5500:   test: 0.6926423 best: 0.6926436 (5499)  total: 12m 10s  remaining: 21m 1s
+5600:   test: 0.6927735 best: 0.6927735 (5600)  total: 12m 24s  remaining: 20m 48s
+5700:   test: 0.6928851 best: 0.6928887 (5699)  total: 12m 37s  remaining: 20m 36s
+5800:   test: 0.6929723 best: 0.6929730 (5797)  total: 12m 51s  remaining: 20m 23s
+5900:   test: 0.6930402 best: 0.6930458 (5892)  total: 13m 5s   remaining: 20m 10s
+6000:   test: 0.6931735 best: 0.6931750 (5996)  total: 13m 18s  remaining: 19m 57s
+6100:   test: 0.6932466 best: 0.6932466 (6100)  total: 13m 32s  remaining: 19m 45s
+6200:   test: 0.6932449 best: 0.6932601 (6121)  total: 13m 46s  remaining: 19m 33s
+6300:   test: 0.6933627 best: 0.6933628 (6293)  total: 14m      remaining: 19m 20s
+6400:   test: 0.6934322 best: 0.6934415 (6392)  total: 14m 14s  remaining: 19m 7s
+6500:   test: 0.6935516 best: 0.6935576 (6489)  total: 14m 28s  remaining: 18m 54s
+6600:   test: 0.6936160 best: 0.6936222 (6576)  total: 14m 41s  remaining: 18m 42s
+6700:   test: 0.6936151 best: 0.6936439 (6662)  total: 14m 56s  remaining: 18m 30s
+6800:   test: 0.6937014 best: 0.6937023 (6799)  total: 15m 10s  remaining: 18m 17s
+6900:   test: 0.6937243 best: 0.6937262 (6899)  total: 15m 24s  remaining: 18m 4s
+7000:   test: 0.6937714 best: 0.6937714 (7000)  total: 15m 38s  remaining: 17m 52s
+7100:   test: 0.6938431 best: 0.6938468 (7096)  total: 15m 52s  remaining: 17m 39s
+7200:   test: 0.6938252 best: 0.6938478 (7143)  total: 16m 6s   remaining: 17m 26s
+7300:   test: 0.6938385 best: 0.6938558 (7276)  total: 16m 20s  remaining: 17m 14s
+7400:   test: 0.6939339 best: 0.6939373 (7398)  total: 16m 34s  remaining: 17m 1s
+7500:   test: 0.6939411 best: 0.6939460 (7471)  total: 16m 49s  remaining: 16m 48s
+7600:   test: 0.6940081 best: 0.6940089 (7599)  total: 17m 3s   remaining: 16m 35s
+7700:   test: 0.6940299 best: 0.6940428 (7693)  total: 17m 17s  remaining: 16m 23s
+7800:   test: 0.6940672 best: 0.6940831 (7776)  total: 17m 31s  remaining: 16m 10s
+7900:   test: 0.6940573 best: 0.6940831 (7776)  total: 17m 45s  remaining: 15m 57s
+8000:   test: 0.6940773 best: 0.6940835 (7995)  total: 17m 59s  remaining: 15m 44s
+8100:   test: 0.6941238 best: 0.6941241 (8099)  total: 18m 14s  remaining: 15m 31s
+8200:   test: 0.6941836 best: 0.6942006 (8176)  total: 18m 28s  remaining: 15m 18s
+8300:   test: 0.6942157 best: 0.6942200 (8293)  total: 18m 42s  remaining: 15m 5s
+8400:   test: 0.6942424 best: 0.6942448 (8393)  total: 18m 56s  remaining: 14m 53s
+8500:   test: 0.6942411 best: 0.6942515 (8414)  total: 19m 11s  remaining: 14m 40s
+8600:   test: 0.6942789 best: 0.6942898 (8586)  total: 19m 25s  remaining: 14m 27s
+8700:   test: 0.6943342 best: 0.6943371 (8698)  total: 19m 39s  remaining: 14m 14s
+8800:   test: 0.6943117 best: 0.6943375 (8722)  total: 19m 54s  remaining: 14m 1s
+8900:   test: 0.6943662 best: 0.6943791 (8893)  total: 20m 8s   remaining: 13m 47s
+9000:   test: 0.6944348 best: 0.6944399 (8990)  total: 20m 22s  remaining: 13m 34s
+9100:   test: 0.6944259 best: 0.6944408 (9084)  total: 20m 36s  remaining: 13m 21s
+9200:   test: 0.6944073 best: 0.6944408 (9084)  total: 20m 51s  remaining: 13m 8s
+9300:   test: 0.6944687 best: 0.6944709 (9240)  total: 21m 5s   remaining: 12m 55s
+9400:   test: 0.6944901 best: 0.6944901 (9400)  total: 21m 19s  remaining: 12m 42s
+9500:   test: 0.6945359 best: 0.6945390 (9446)  total: 21m 34s  remaining: 12m 29s
+9600:   test: 0.6944935 best: 0.6945390 (9446)  total: 21m 48s  remaining: 12m 15s
+9700:   test: 0.6945060 best: 0.6945390 (9446)  total: 22m 3s   remaining: 12m 2s
+9800:   test: 0.6945221 best: 0.6945393 (9761)  total: 22m 17s  remaining: 11m 49s
+9900:   test: 0.6945193 best: 0.6945393 (9761)  total: 22m 31s  remaining: 11m 36s
+10000:  test: 0.6945075 best: 0.6945583 (9954)  total: 22m 46s  remaining: 11m 22s
+10100:  test: 0.6945284 best: 0.6945583 (9954)  total: 23m      remaining: 11m 9s
+10200:  test: 0.6945816 best: 0.6945842 (10199) total: 23m 14s  remaining: 10m 56s
+10300:  test: 0.6946110 best: 0.6946217 (10284) total: 23m 29s  remaining: 10m 42s
+10400:  test: 0.6945967 best: 0.6946217 (10284) total: 23m 43s  remaining: 10m 29s
+10500:  test: 0.6946257 best: 0.6946350 (10492) total: 23m 58s  remaining: 10m 16s
+10600:  test: 0.6946946 best: 0.6946987 (10589) total: 24m 12s  remaining: 10m 2s
+10700:  test: 0.6947453 best: 0.6947570 (10690) total: 24m 27s  remaining: 9m 49s
+10800:  test: 0.6947920 best: 0.6947996 (10790) total: 24m 41s  remaining: 9m 35s
+10900:  test: 0.6948856 best: 0.6948923 (10887) total: 24m 55s  remaining: 9m 22s
+11000:  test: 0.6949517 best: 0.6949563 (10990) total: 25m 10s  remaining: 9m 8s
+11100:  test: 0.6949682 best: 0.6949744 (11088) total: 25m 24s  remaining: 8m 55s
+11200:  test: 0.6949598 best: 0.6949782 (11175) total: 25m 39s  remaining: 8m 42s
+11300:  test: 0.6949762 best: 0.6949782 (11175) total: 25m 53s  remaining: 8m 28s
+11400:  test: 0.6949738 best: 0.6949782 (11175) total: 26m 7s   remaining: 8m 14s
+11500:  test: 0.6950226 best: 0.6950314 (11488) total: 26m 22s  remaining: 8m 1s
+11600:  test: 0.6950511 best: 0.6950670 (11567) total: 26m 36s  remaining: 7m 47s
+11700:  test: 0.6950773 best: 0.6950787 (11699) total: 26m 51s  remaining: 7m 34s
+11800:  test: 0.6951070 best: 0.6951151 (11786) total: 27m 6s   remaining: 7m 20s
+11900:  test: 0.6951349 best: 0.6951472 (11844) total: 27m 20s  remaining: 7m 7s
+12000:  test: 0.6952060 best: 0.6952071 (11998) total: 27m 35s  remaining: 6m 53s
+12100:  test: 0.6952539 best: 0.6952561 (12094) total: 27m 50s  remaining: 6m 40s
+12200:  test: 0.6952989 best: 0.6952989 (12200) total: 28m 4s   remaining: 6m 26s
+12300:  test: 0.6953052 best: 0.6953292 (12253) total: 28m 19s  remaining: 6m 12s
+12400:  test: 0.6953394 best: 0.6953411 (12362) total: 28m 33s  remaining: 5m 59s
+12500:  test: 0.6953306 best: 0.6953411 (12362) total: 28m 48s  remaining: 5m 45s
+12600:  test: 0.6953708 best: 0.6953734 (12598) total: 29m 3s   remaining: 5m 31s
+12700:  test: 0.6953592 best: 0.6953757 (12606) total: 29m 18s  remaining: 5m 18s
+12800:  test: 0.6953654 best: 0.6953757 (12606) total: 29m 32s  remaining: 5m 4s
+12900:  test: 0.6953913 best: 0.6953913 (12900) total: 29m 47s  remaining: 4m 50s
+13000:  test: 0.6953896 best: 0.6954042 (12943) total: 30m 2s   remaining: 4m 37s
+13100:  test: 0.6954083 best: 0.6954127 (13097) total: 30m 16s  remaining: 4m 23s
+13200:  test: 0.6954427 best: 0.6954548 (13183) total: 30m 31s  remaining: 4m 9s
+13300:  test: 0.6954472 best: 0.6954548 (13183) total: 30m 46s  remaining: 3m 55s
+13400:  test: 0.6954533 best: 0.6954649 (13359) total: 31m 1s   remaining: 3m 42s
+13500:  test: 0.6954641 best: 0.6954774 (13462) total: 31m 15s  remaining: 3m 28s
+13600:  test: 0.6954255 best: 0.6954774 (13462) total: 31m 30s  remaining: 3m 14s
+13700:  test: 0.6954421 best: 0.6954774 (13462) total: 31m 45s  remaining: 3m
+13800:  test: 0.6954272 best: 0.6954774 (13462) total: 31m 59s  remaining: 2m 46s
+13900:  test: 0.6954149 best: 0.6954774 (13462) total: 32m 14s  remaining: 2m 32s
+bestTest = 0.6954774261
+bestIteration = 13462
+Shrink model to first 13463 iterations.
+模型已保存: /media/wenhao/7d8f46ef-9674-40b1-a999-148b79a69954/zhaoshanhui/meituan-rec/train_catboost_v4/fold_9.cbm
+最佳迭代: 13462
+第9折 AUC: 0.6955
+
+============================================================
+第10/10折
+============================================================
+训练集: (1609749, 131), 正样本: 0.3077
+验证集: (178888, 131), 正样本: 0.3093
+Default metric period is 5 because AUC is/are not implemented for GPU
+0:      test: 0.6513667 best: 0.6513667 (0)     total: 147ms    remaining: 36m 48s
+100:    test: 0.6646730 best: 0.6646730 (100)   total: 12.9s    remaining: 31m 47s
+200:    test: 0.6675564 best: 0.6675564 (200)   total: 25.9s    remaining: 31m 43s
+300:    test: 0.6690279 best: 0.6690279 (300)   total: 38.8s    remaining: 31m 34s
+400:    test: 0.6703154 best: 0.6703154 (400)   total: 51.9s    remaining: 31m 29s
+500:    test: 0.6717443 best: 0.6717443 (500)   total: 1m 5s    remaining: 31m 22s
+600:    test: 0.6729274 best: 0.6729274 (600)   total: 1m 18s   remaining: 31m 11s
+700:    test: 0.6737714 best: 0.6737714 (700)   total: 1m 31s   remaining: 31m
+800:    test: 0.6748973 best: 0.6748973 (800)   total: 1m 44s   remaining: 30m 43s
+900:    test: 0.6760529 best: 0.6760529 (900)   total: 1m 56s   remaining: 30m 29s
+1000:   test: 0.6772731 best: 0.6772749 (995)   total: 2m 9s    remaining: 30m 15s
+1100:   test: 0.6779010 best: 0.6779010 (1100)  total: 2m 23s   remaining: 30m 6s
+1200:   test: 0.6786046 best: 0.6786067 (1199)  total: 2m 36s   remaining: 29m 55s
+1300:   test: 0.6791313 best: 0.6791313 (1300)  total: 2m 49s   remaining: 29m 42s
+1400:   test: 0.6796989 best: 0.6797017 (1397)  total: 3m 2s    remaining: 29m 29s
+1500:   test: 0.6801776 best: 0.6801807 (1497)  total: 3m 15s   remaining: 29m 17s
+1600:   test: 0.6808853 best: 0.6808893 (1599)  total: 3m 28s   remaining: 29m 2s
+1700:   test: 0.6816935 best: 0.6816935 (1700)  total: 3m 41s   remaining: 28m 49s
+1800:   test: 0.6821314 best: 0.6821314 (1800)  total: 3m 54s   remaining: 28m 39s
+1900:   test: 0.6828051 best: 0.6828051 (1900)  total: 4m 7s    remaining: 28m 25s
+2000:   test: 0.6831332 best: 0.6831332 (2000)  total: 4m 20s   remaining: 28m 13s
+2100:   test: 0.6838929 best: 0.6839022 (2084)  total: 4m 33s   remaining: 28m
+2200:   test: 0.6842703 best: 0.6842746 (2194)  total: 4m 46s   remaining: 27m 48s
+2300:   test: 0.6849762 best: 0.6849762 (2300)  total: 5m       remaining: 27m 35s
+2400:   test: 0.6855165 best: 0.6855192 (2396)  total: 5m 13s   remaining: 27m 23s
+2500:   test: 0.6859731 best: 0.6859731 (2500)  total: 5m 26s   remaining: 27m 11s
+2600:   test: 0.6863384 best: 0.6863432 (2596)  total: 5m 40s   remaining: 27m
+2700:   test: 0.6867624 best: 0.6867715 (2675)  total: 5m 53s   remaining: 26m 49s
+2800:   test: 0.6870505 best: 0.6870529 (2799)  total: 6m 6s    remaining: 26m 37s
+2900:   test: 0.6874800 best: 0.6874846 (2896)  total: 6m 19s   remaining: 26m 24s
+3000:   test: 0.6881039 best: 0.6881051 (2997)  total: 6m 33s   remaining: 26m 11s
+3100:   test: 0.6885118 best: 0.6885125 (3097)  total: 6m 46s   remaining: 25m 58s
+3200:   test: 0.6888838 best: 0.6888838 (3200)  total: 6m 59s   remaining: 25m 46s
+3300:   test: 0.6891506 best: 0.6891506 (3300)  total: 7m 13s   remaining: 25m 34s
+3400:   test: 0.6894060 best: 0.6894087 (3398)  total: 7m 26s   remaining: 25m 22s
+3500:   test: 0.6897913 best: 0.6897967 (3496)  total: 7m 39s   remaining: 25m 9s
+3600:   test: 0.6901285 best: 0.6901308 (3599)  total: 7m 52s   remaining: 24m 56s
+3700:   test: 0.6903702 best: 0.6903702 (3700)  total: 8m 6s    remaining: 24m 44s
+3800:   test: 0.6905774 best: 0.6905774 (3800)  total: 8m 19s   remaining: 24m 31s
+3900:   test: 0.6907331 best: 0.6907331 (3900)  total: 8m 32s   remaining: 24m 19s
+4000:   test: 0.6909329 best: 0.6909361 (3996)  total: 8m 46s   remaining: 24m 7s
+4100:   test: 0.6911011 best: 0.6911011 (4100)  total: 9m       remaining: 23m 55s
+4200:   test: 0.6913078 best: 0.6913078 (4200)  total: 9m 13s   remaining: 23m 43s
+4300:   test: 0.6914748 best: 0.6914827 (4291)  total: 9m 26s   remaining: 23m 30s
+4400:   test: 0.6917421 best: 0.6917443 (4399)  total: 9m 40s   remaining: 23m 17s
+4500:   test: 0.6919144 best: 0.6919144 (4500)  total: 9m 53s   remaining: 23m 4s
+4600:   test: 0.6920893 best: 0.6920893 (4600)  total: 10m 7s   remaining: 22m 51s
+4700:   test: 0.6922051 best: 0.6922051 (4700)  total: 10m 20s  remaining: 22m 39s
+4800:   test: 0.6923767 best: 0.6923767 (4800)  total: 10m 34s  remaining: 22m 27s
+4900:   test: 0.6925470 best: 0.6925470 (4900)  total: 10m 47s  remaining: 22m 14s
+5000:   test: 0.6927277 best: 0.6927277 (5000)  total: 11m 1s   remaining: 22m 2s
+5100:   test: 0.6928622 best: 0.6928631 (5099)  total: 11m 15s  remaining: 21m 50s
+5200:   test: 0.6929258 best: 0.6929288 (5199)  total: 11m 28s  remaining: 21m 37s
+5300:   test: 0.6931019 best: 0.6931037 (5293)  total: 11m 42s  remaining: 21m 24s
+5400:   test: 0.6932839 best: 0.6932914 (5383)  total: 11m 55s  remaining: 21m 12s
+5500:   test: 0.6933350 best: 0.6933350 (5500)  total: 12m 9s   remaining: 21m
+5600:   test: 0.6934072 best: 0.6934217 (5578)  total: 12m 23s  remaining: 20m 48s
+5700:   test: 0.6934955 best: 0.6934981 (5699)  total: 12m 37s  remaining: 20m 35s
+5800:   test: 0.6935526 best: 0.6935570 (5793)  total: 12m 51s  remaining: 20m 23s
+5900:   test: 0.6936404 best: 0.6936404 (5900)  total: 13m 5s   remaining: 20m 11s
+6000:   test: 0.6936779 best: 0.6936809 (5986)  total: 13m 19s  remaining: 19m 58s
+6100:   test: 0.6938125 best: 0.6938125 (6100)  total: 13m 33s  remaining: 19m 46s
+6200:   test: 0.6938519 best: 0.6938519 (6200)  total: 13m 47s  remaining: 19m 33s
+6300:   test: 0.6939178 best: 0.6939307 (6256)  total: 14m 1s   remaining: 19m 21s
+6400:   test: 0.6940318 best: 0.6940328 (6398)  total: 14m 14s  remaining: 19m 8s
+6500:   test: 0.6941048 best: 0.6941048 (6500)  total: 14m 28s  remaining: 18m 55s
+6600:   test: 0.6941839 best: 0.6941843 (6599)  total: 14m 42s  remaining: 18m 42s
+6700:   test: 0.6942829 best: 0.6942829 (6700)  total: 14m 56s  remaining: 18m 29s
+6800:   test: 0.6943933 best: 0.6943947 (6796)  total: 15m 10s  remaining: 18m 17s
+6900:   test: 0.6944146 best: 0.6944256 (6883)  total: 15m 23s  remaining: 18m 4s
+7000:   test: 0.6944374 best: 0.6944515 (6972)  total: 15m 38s  remaining: 17m 51s
+7100:   test: 0.6945091 best: 0.6945207 (7087)  total: 15m 51s  remaining: 17m 38s
+7200:   test: 0.6945489 best: 0.6945584 (7156)  total: 16m 5s   remaining: 17m 26s
+7300:   test: 0.6945825 best: 0.6945828 (7299)  total: 16m 20s  remaining: 17m 13s
+7400:   test: 0.6946106 best: 0.6946123 (7395)  total: 16m 34s  remaining: 17m
+7500:   test: 0.6947330 best: 0.6947330 (7500)  total: 16m 47s  remaining: 16m 47s
+7600:   test: 0.6947758 best: 0.6947792 (7592)  total: 17m 1s   remaining: 16m 34s
+7700:   test: 0.6948156 best: 0.6948162 (7697)  total: 17m 15s  remaining: 16m 21s
+7800:   test: 0.6949083 best: 0.6949088 (7799)  total: 17m 29s  remaining: 16m 8s
+7900:   test: 0.6950043 best: 0.6950043 (7900)  total: 17m 43s  remaining: 15m 55s
+8000:   test: 0.6950125 best: 0.6950310 (7949)  total: 17m 57s  remaining: 15m 42s
+8100:   test: 0.6951031 best: 0.6951105 (8096)  total: 18m 12s  remaining: 15m 30s
+8200:   test: 0.6951327 best: 0.6951364 (8195)  total: 18m 26s  remaining: 15m 17s
+8300:   test: 0.6951454 best: 0.6951544 (8264)  total: 18m 40s  remaining: 15m 4s
+8400:   test: 0.6952202 best: 0.6952233 (8395)  total: 18m 54s  remaining: 14m 51s
+8500:   test: 0.6952424 best: 0.6952523 (8487)  total: 19m 8s   remaining: 14m 38s
+8600:   test: 0.6953615 best: 0.6953615 (8600)  total: 19m 22s  remaining: 14m 25s
+8700:   test: 0.6953209 best: 0.6953697 (8606)  total: 19m 37s  remaining: 14m 12s
+8800:   test: 0.6953433 best: 0.6953697 (8606)  total: 19m 51s  remaining: 13m 59s
+8900:   test: 0.6954015 best: 0.6954108 (8862)  total: 20m 5s   remaining: 13m 46s
+9000:   test: 0.6954521 best: 0.6954598 (8988)  total: 20m 19s  remaining: 13m 32s
+9100:   test: 0.6955476 best: 0.6955494 (9095)  total: 20m 33s  remaining: 13m 19s
+9200:   test: 0.6955375 best: 0.6955543 (9111)  total: 20m 48s  remaining: 13m 6s
+9300:   test: 0.6955046 best: 0.6955543 (9111)  total: 21m 2s   remaining: 12m 53s
+9400:   test: 0.6955627 best: 0.6955706 (9372)  total: 21m 16s  remaining: 12m 40s
+9500:   test: 0.6956262 best: 0.6956314 (9493)  total: 21m 30s  remaining: 12m 27s
+9600:   test: 0.6956781 best: 0.6956804 (9589)  total: 21m 45s  remaining: 12m 13s
+9700:   test: 0.6956924 best: 0.6956924 (9700)  total: 21m 59s  remaining: 12m
+9800:   test: 0.6957272 best: 0.6957424 (9766)  total: 22m 13s  remaining: 11m 47s
+9900:   test: 0.6957502 best: 0.6957567 (9887)  total: 22m 27s  remaining: 11m 34s
+10000:  test: 0.6958042 best: 0.6958050 (9998)  total: 22m 42s  remaining: 11m 20s
+10100:  test: 0.6958768 best: 0.6958768 (10100) total: 22m 56s  remaining: 11m 7s
+10200:  test: 0.6959183 best: 0.6959192 (10199) total: 23m 10s  remaining: 10m 54s
+10300:  test: 0.6959206 best: 0.6959480 (10256) total: 23m 24s  remaining: 10m 40s
+10400:  test: 0.6959333 best: 0.6959480 (10256) total: 23m 38s  remaining: 10m 27s
+10500:  test: 0.6959226 best: 0.6959480 (10256) total: 23m 53s  remaining: 10m 14s
+10600:  test: 0.6959411 best: 0.6959480 (10256) total: 24m 7s   remaining: 10m
+10700:  test: 0.6959838 best: 0.6959890 (10695) total: 24m 21s  remaining: 9m 47s
+10800:  test: 0.6960008 best: 0.6960042 (10797) total: 24m 36s  remaining: 9m 34s
+10900:  test: 0.6960401 best: 0.6960485 (10891) total: 24m 51s  remaining: 9m 20s
+11000:  test: 0.6960394 best: 0.6960485 (10891) total: 25m 5s   remaining: 9m 7s
+11100:  test: 0.6960725 best: 0.6960725 (11100) total: 25m 20s  remaining: 8m 54s
+11200:  test: 0.6960596 best: 0.6960806 (11108) total: 25m 35s  remaining: 8m 40s
+11300:  test: 0.6960660 best: 0.6960806 (11108) total: 25m 49s  remaining: 8m 27s
+11400:  test: 0.6960588 best: 0.6960886 (11326) total: 26m 3s   remaining: 8m 13s
+11500:  test: 0.6960815 best: 0.6960886 (11326) total: 26m 18s  remaining: 8m
+11600:  test: 0.6961069 best: 0.6961104 (11586) total: 26m 32s  remaining: 7m 46s
+11700:  test: 0.6960889 best: 0.6961104 (11586) total: 26m 47s  remaining: 7m 33s
+11800:  test: 0.6961072 best: 0.6961116 (11768) total: 27m 2s   remaining: 7m 19s
+11900:  test: 0.6961125 best: 0.6961298 (11821) total: 27m 16s  remaining: 7m 6s
+12000:  test: 0.6961560 best: 0.6961606 (11986) total: 27m 30s  remaining: 6m 52s
+12100:  test: 0.6961767 best: 0.6961883 (12089) total: 27m 45s  remaining: 6m 38s
+12200:  test: 0.6962116 best: 0.6962148 (12195) total: 27m 59s  remaining: 6m 25s
+12300:  test: 0.6961995 best: 0.6962281 (12243) total: 28m 14s  remaining: 6m 11s
+12400:  test: 0.6962104 best: 0.6962281 (12243) total: 28m 29s  remaining: 5m 58s
+12500:  test: 0.6962304 best: 0.6962456 (12454) total: 28m 44s  remaining: 5m 44s
+12600:  test: 0.6962614 best: 0.6962746 (12580) total: 28m 58s  remaining: 5m 31s
+12700:  test: 0.6962787 best: 0.6962804 (12698) total: 29m 13s  remaining: 5m 17s
+12800:  test: 0.6962877 best: 0.6962987 (12788) total: 29m 27s  remaining: 5m 3s
+12900:  test: 0.6963293 best: 0.6963320 (12894) total: 29m 42s  remaining: 4m 50s
+13000:  test: 0.6963300 best: 0.6963478 (12914) total: 29m 57s  remaining: 4m 36s
+13100:  test: 0.6963437 best: 0.6963634 (13074) total: 30m 11s  remaining: 4m 22s
+13200:  test: 0.6963187 best: 0.6963634 (13074) total: 30m 26s  remaining: 4m 8s
+13300:  test: 0.6963094 best: 0.6963634 (13074) total: 30m 41s  remaining: 3m 55s
+13400:  test: 0.6963170 best: 0.6963634 (13074) total: 30m 55s  remaining: 3m 41s
+13500:  test: 0.6962941 best: 0.6963634 (13074) total: 31m 10s  remaining: 3m 27s
+bestTest = 0.6963633597
+bestIteration = 13074
+Shrink model to first 13075 iterations.
+模型已保存: /media/wenhao/7d8f46ef-9674-40b1-a999-148b79a69954/zhaoshanhui/meituan-rec/train_catboost_v4/fold_10.cbm
+最佳迭代: 13074
+第10折 AUC: 0.6964
+
+============================================================
+交叉验证结果汇总
+============================================================
+各折AUC: ['0.6970', '0.6965', '0.6969', '0.6984', '0.6972', '0.6969', '0.6954', '0.6980', '0.6955', '0.6964']
+平均AUC: 0.6968 ± 0.0009
+最大AUC: 0.6984
+最小AUC: 0.6954
+============================================================
+
+加权集成预测 (V4) - 逐个加载模型...
+集成权重: ['0.1018', '0.0965', '0.1001', '0.1165', '0.1040', '0.1002', '0.0868', '0.1117', '0.0871', '0.0952']
+  加载模型 1/10: fold_1.cbm
+  加载模型 2/10: fold_2.cbm
+  加载模型 3/10: fold_3.cbm
+  加载模型 4/10: fold_4.cbm
+  加载模型 5/10: fold_5.cbm
+  加载模型 6/10: fold_6.cbm
+  加载模型 7/10: fold_7.cbm
+  加载模型 8/10: fold_8.cbm
+  加载模型 9/10: fold_9.cbm
+  加载模型 10/10: fold_10.cbm
+保存结果...
+预测结果已保存到 submission_v4.csv
+简单平均预测结果已保存到 submission_v4_simple.csv

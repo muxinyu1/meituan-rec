@@ -1,0 +1,371 @@
+2203 (1096)  total: 1m 49s   remaining: 14m 42s
+1200:   test: 0.6704261 best: 0.6704268 (1199)  total: 1m 59s   remaining: 14m 32s
+1300:   test: 0.6704805 best: 0.6704856 (1272)  total: 2m 8s    remaining: 14m 22s
+1400:   test: 0.6705496 best: 0.6705561 (1394)  total: 2m 19s   remaining: 14m 13s
+1500:   test: 0.6707281 best: 0.6707438 (1493)  total: 2m 29s   remaining: 14m 5s
+1600:   test: 0.6707619 best: 0.6707619 (1600)  total: 2m 39s   remaining: 13m 55s
+1700:   test: 0.6708714 best: 0.6708792 (1689)  total: 2m 49s   remaining: 13m 46s
+1800:   test: 0.6708662 best: 0.6708819 (1705)  total: 2m 59s   remaining: 13m 38s
+1900:   test: 0.6709676 best: 0.6709717 (1898)  total: 3m 9s    remaining: 13m 29s
+2000:   test: 0.6710520 best: 0.6710525 (1999)  total: 3m 20s   remaining: 13m 19s
+2100:   test: 0.6710935 best: 0.6711063 (2081)  total: 3m 30s   remaining: 13m 10s
+2200:   test: 0.6711883 best: 0.6711883 (2200)  total: 3m 40s   remaining: 13m
+2300:   test: 0.6712744 best: 0.6712884 (2274)  total: 3m 50s   remaining: 12m 51s
+2400:   test: 0.6713089 best: 0.6713180 (2397)  total: 4m       remaining: 12m 42s
+2500:   test: 0.6713445 best: 0.6713495 (2455)  total: 4m 11s   remaining: 12m 33s
+2600:   test: 0.6713275 best: 0.6713661 (2557)  total: 4m 21s   remaining: 12m 24s
+2700:   test: 0.6713564 best: 0.6713661 (2557)  total: 4m 31s   remaining: 12m 14s
+2800:   test: 0.6713573 best: 0.6713690 (2751)  total: 4m 42s   remaining: 12m 5s
+2900:   test: 0.6713406 best: 0.6713690 (2751)  total: 4m 52s   remaining: 11m 55s
+3000:   test: 0.6713062 best: 0.6713690 (2751)  total: 5m 2s    remaining: 11m 46s
+bestTest = 0.6713689864
+bestIteration = 2751
+Shrink model to first 2752 iterations.
+最佳迭代: 2751
+第3折 AUC: 0.6714
+
+============================================================
+第4/10折
+============================================================
+训练集: (1609776, 82), 正样本: 0.3076
+验证集: (178861, 82), 正样本: 0.3104
+Default metric period is 5 because AUC is/are not implemented for GPU
+0:      test: 0.6538500 best: 0.6538500 (0)     total: 96ms     remaining: 16m
+100:    test: 0.6654900 best: 0.6654900 (100)   total: 9.76s    remaining: 15m 56s
+200:    test: 0.6682377 best: 0.6682377 (200)   total: 19.5s    remaining: 15m 49s
+300:    test: 0.6692303 best: 0.6692313 (299)   total: 29.3s    remaining: 15m 43s
+400:    test: 0.6698009 best: 0.6698108 (398)   total: 39s      remaining: 15m 34s
+500:    test: 0.6701532 best: 0.6701532 (500)   total: 49s      remaining: 15m 29s
+600:    test: 0.6704454 best: 0.6704454 (600)   total: 58.9s    remaining: 15m 21s
+700:    test: 0.6707620 best: 0.6707639 (699)   total: 1m 8s    remaining: 15m 13s
+800:    test: 0.6709230 best: 0.6709237 (799)   total: 1m 18s   remaining: 15m 5s
+900:    test: 0.6711056 best: 0.6711056 (900)   total: 1m 28s   remaining: 14m 57s
+1000:   test: 0.6712908 best: 0.6712948 (996)   total: 1m 38s   remaining: 14m 49s
+1100:   test: 0.6714128 best: 0.6714128 (1100)  total: 1m 49s   remaining: 14m 41s
+1200:   test: 0.6716287 best: 0.6716334 (1198)  total: 1m 59s   remaining: 14m 32s
+1300:   test: 0.6717505 best: 0.6717536 (1297)  total: 2m 9s    remaining: 14m 23s
+1400:   test: 0.6718191 best: 0.6718285 (1391)  total: 2m 19s   remaining: 14m 14s
+1500:   test: 0.6718830 best: 0.6718995 (1484)  total: 2m 29s   remaining: 14m 5s
+1600:   test: 0.6718861 best: 0.6718995 (1484)  total: 2m 39s   remaining: 13m 56s
+1700:   test: 0.6719573 best: 0.6719766 (1679)  total: 2m 49s   remaining: 13m 47s
+1800:   test: 0.6720013 best: 0.6720034 (1796)  total: 2m 59s   remaining: 13m 38s
+1900:   test: 0.6720001 best: 0.6720265 (1877)  total: 3m 10s   remaining: 13m 29s
+2000:   test: 0.6720300 best: 0.6720572 (1960)  total: 3m 20s   remaining: 13m 20s
+2100:   test: 0.6720383 best: 0.6720572 (1960)  total: 3m 30s   remaining: 13m 11s
+2200:   test: 0.6720454 best: 0.6720572 (1960)  total: 3m 40s   remaining: 13m 2s
+2300:   test: 0.6720608 best: 0.6720701 (2295)  total: 3m 51s   remaining: 12m 53s
+2400:   test: 0.6721187 best: 0.6721187 (2400)  total: 4m 1s    remaining: 12m 43s
+2500:   test: 0.6721427 best: 0.6721479 (2498)  total: 4m 11s   remaining: 12m 34s
+2600:   test: 0.6721765 best: 0.6721948 (2588)  total: 4m 21s   remaining: 12m 25s
+2700:   test: 0.6721519 best: 0.6722040 (2619)  total: 4m 32s   remaining: 12m 16s
+2800:   test: 0.6721525 best: 0.6722040 (2619)  total: 4m 42s   remaining: 12m 6s
+2900:   test: 0.6721218 best: 0.6722040 (2619)  total: 4m 52s   remaining: 11m 56s
+bestTest = 0.6722040176
+bestIteration = 2619
+Shrink model to first 2620 iterations.
+最佳迭代: 2619
+第4折 AUC: 0.6722
+
+============================================================
+第5/10折
+============================================================
+训练集: (1609776, 82), 正样本: 0.3080
+验证集: (178861, 82), 正样本: 0.3065
+Default metric period is 5 because AUC is/are not implemented for GPU
+0:      test: 0.6530907 best: 0.6530907 (0)     total: 97.2ms   remaining: 16m 11s
+100:    test: 0.6655462 best: 0.6655462 (100)   total: 9.75s    remaining: 15m 55s
+200:    test: 0.6684281 best: 0.6684281 (200)   total: 19.5s    remaining: 15m 51s
+300:    test: 0.6696929 best: 0.6696929 (300)   total: 29.4s    remaining: 15m 46s
+400:    test: 0.6702906 best: 0.6702906 (400)   total: 39.3s    remaining: 15m 40s
+500:    test: 0.6707355 best: 0.6707355 (500)   total: 49.3s    remaining: 15m 35s
+600:    test: 0.6710328 best: 0.6710405 (594)   total: 59.3s    remaining: 15m 27s
+700:    test: 0.6712217 best: 0.6712217 (700)   total: 1m 9s    remaining: 15m 21s
+800:    test: 0.6713671 best: 0.6713728 (798)   total: 1m 19s   remaining: 15m 12s
+900:    test: 0.6715862 best: 0.6715862 (900)   total: 1m 29s   remaining: 15m 5s
+1000:   test: 0.6717681 best: 0.6717697 (998)   total: 1m 39s   remaining: 14m 55s
+1100:   test: 0.6719400 best: 0.6719439 (1091)  total: 1m 49s   remaining: 14m 46s
+1200:   test: 0.6720459 best: 0.6720475 (1196)  total: 1m 59s   remaining: 14m 36s
+1300:   test: 0.6721067 best: 0.6721150 (1294)  total: 2m 9s    remaining: 14m 27s
+1400:   test: 0.6721194 best: 0.6721213 (1391)  total: 2m 19s   remaining: 14m 18s
+1500:   test: 0.6722345 best: 0.6722345 (1500)  total: 2m 29s   remaining: 14m 8s
+1600:   test: 0.6723561 best: 0.6723605 (1585)  total: 2m 39s   remaining: 13m 59s
+1700:   test: 0.6724052 best: 0.6724153 (1697)  total: 2m 49s   remaining: 13m 49s
+1800:   test: 0.6724367 best: 0.6724691 (1742)  total: 3m       remaining: 13m 39s
+1900:   test: 0.6724765 best: 0.6724815 (1884)  total: 3m 10s   remaining: 13m 30s
+2000:   test: 0.6724786 best: 0.6724815 (1884)  total: 3m 20s   remaining: 13m 21s
+2100:   test: 0.6725029 best: 0.6725148 (2094)  total: 3m 30s   remaining: 13m 12s
+2200:   test: 0.6725131 best: 0.6725297 (2148)  total: 3m 40s   remaining: 13m 2s
+2300:   test: 0.6725271 best: 0.6725411 (2261)  total: 3m 51s   remaining: 12m 53s
+2400:   test: 0.6725417 best: 0.6725580 (2318)  total: 4m 1s    remaining: 12m 44s
+2500:   test: 0.6725609 best: 0.6725615 (2498)  total: 4m 11s   remaining: 12m 34s
+2600:   test: 0.6725815 best: 0.6726193 (2580)  total: 4m 22s   remaining: 12m 25s
+2700:   test: 0.6725702 best: 0.6726193 (2580)  total: 4m 32s   remaining: 12m 15s
+2800:   test: 0.6725881 best: 0.6726193 (2580)  total: 4m 42s   remaining: 12m 6s
+2900:   test: 0.6726322 best: 0.6726322 (2900)  total: 4m 52s   remaining: 11m 56s
+3000:   test: 0.6726524 best: 0.6726592 (2967)  total: 5m 3s    remaining: 11m 46s
+3100:   test: 0.6726359 best: 0.6726619 (3043)  total: 5m 13s   remaining: 11m 37s
+3200:   test: 0.6727170 best: 0.6727170 (3200)  total: 5m 23s   remaining: 11m 28s
+3300:   test: 0.6727228 best: 0.6727435 (3270)  total: 5m 34s   remaining: 11m 18s
+3400:   test: 0.6727143 best: 0.6727435 (3270)  total: 5m 44s   remaining: 11m 8s
+3500:   test: 0.6727134 best: 0.6727435 (3270)  total: 5m 54s   remaining: 10m 58s
+3600:   test: 0.6727491 best: 0.6727512 (3587)  total: 6m 5s    remaining: 10m 49s
+3700:   test: 0.6727737 best: 0.6727909 (3689)  total: 6m 15s   remaining: 10m 39s
+3800:   test: 0.6727698 best: 0.6728070 (3748)  total: 6m 26s   remaining: 10m 29s
+3900:   test: 0.6727320 best: 0.6728070 (3748)  total: 6m 36s   remaining: 10m 20s
+4000:   test: 0.6727074 best: 0.6728070 (3748)  total: 6m 46s   remaining: 10m 10s
+bestTest = 0.6728069782
+bestIteration = 3748
+Shrink model to first 3749 iterations.
+最佳迭代: 3748
+第5折 AUC: 0.6728
+
+============================================================
+第6/10折
+============================================================
+训练集: (1609776, 82), 正样本: 0.3078
+验证集: (178861, 82), 正样本: 0.3081
+Default metric period is 5 because AUC is/are not implemented for GPU
+0:      test: 0.6535451 best: 0.6535451 (0)     total: 97.1ms   remaining: 16m 10s
+100:    test: 0.6655377 best: 0.6655377 (100)   total: 9.76s    remaining: 15m 56s
+200:    test: 0.6677968 best: 0.6677968 (200)   total: 19.6s    remaining: 15m 54s
+300:    test: 0.6687319 best: 0.6687319 (300)   total: 29.4s    remaining: 15m 48s
+400:    test: 0.6692833 best: 0.6692833 (400)   total: 39.4s    remaining: 15m 44s
+500:    test: 0.6696024 best: 0.6696024 (500)   total: 49.6s    remaining: 15m 39s
+600:    test: 0.6698942 best: 0.6698942 (600)   total: 59.6s    remaining: 15m 32s
+700:    test: 0.6701503 best: 0.6701503 (700)   total: 1m 9s    remaining: 15m 23s
+800:    test: 0.6704100 best: 0.6704100 (800)   total: 1m 19s   remaining: 15m 13s
+900:    test: 0.6705229 best: 0.6705439 (890)   total: 1m 29s   remaining: 15m 5s
+1000:   test: 0.6706744 best: 0.6706744 (1000)  total: 1m 39s   remaining: 14m 58s
+1100:   test: 0.6708631 best: 0.6708710 (1098)  total: 1m 50s   remaining: 14m 50s
+1200:   test: 0.6709611 best: 0.6709641 (1197)  total: 2m       remaining: 14m 41s
+1300:   test: 0.6710218 best: 0.6710228 (1299)  total: 2m 10s   remaining: 14m 33s
+1400:   test: 0.6711126 best: 0.6711343 (1389)  total: 2m 20s   remaining: 14m 23s
+1500:   test: 0.6711608 best: 0.6711608 (1500)  total: 2m 30s   remaining: 14m 14s
+1600:   test: 0.6712323 best: 0.6712387 (1598)  total: 2m 41s   remaining: 14m 5s
+1700:   test: 0.6713437 best: 0.6713437 (1697)  total: 2m 51s   remaining: 13m 55s
+1800:   test: 0.6713955 best: 0.6714038 (1794)  total: 3m 1s    remaining: 13m 45s
+1900:   test: 0.6714444 best: 0.6714657 (1855)  total: 3m 11s   remaining: 13m 36s
+2000:   test: 0.6714944 best: 0.6714944 (2000)  total: 3m 21s   remaining: 13m 26s
+2100:   test: 0.6715384 best: 0.6715384 (2100)  total: 3m 31s   remaining: 13m 16s
+2200:   test: 0.6716036 best: 0.6716107 (2191)  total: 3m 42s   remaining: 13m 6s
+2300:   test: 0.6716028 best: 0.6716107 (2191)  total: 3m 52s   remaining: 12m 57s
+2400:   test: 0.6716386 best: 0.6716422 (2390)  total: 4m 2s    remaining: 12m 47s
+2500:   test: 0.6716442 best: 0.6716454 (2412)  total: 4m 12s   remaining: 12m 38s
+2600:   test: 0.6716543 best: 0.6716695 (2520)  total: 4m 23s   remaining: 12m 29s
+2700:   test: 0.6716742 best: 0.6717047 (2635)  total: 4m 33s   remaining: 12m 20s
+2800:   test: 0.6716530 best: 0.6717047 (2635)  total: 4m 44s   remaining: 12m 10s
+2900:   test: 0.6716589 best: 0.6717047 (2635)  total: 4m 54s   remaining: 12m
+bestTest = 0.6717047095
+bestIteration = 2635
+Shrink model to first 2636 iterations.
+最佳迭代: 2635
+第6折 AUC: 0.6717
+
+============================================================
+第7/10折
+============================================================
+训练集: (1609776, 82), 正样本: 0.3078
+验证集: (178861, 82), 正样本: 0.3080
+Default metric period is 5 because AUC is/are not implemented for GPU
+0:      test: 0.6514348 best: 0.6514348 (0)     total: 98.2ms   remaining: 16m 22s
+100:    test: 0.6633686 best: 0.6633686 (100)   total: 9.73s    remaining: 15m 53s
+200:    test: 0.6658031 best: 0.6658031 (200)   total: 19.5s    remaining: 15m 48s
+300:    test: 0.6668923 best: 0.6668923 (300)   total: 29.2s    remaining: 15m 40s
+400:    test: 0.6674507 best: 0.6674507 (400)   total: 39s      remaining: 15m 34s
+500:    test: 0.6679171 best: 0.6679171 (500)   total: 49s      remaining: 15m 29s
+600:    test: 0.6682252 best: 0.6682252 (600)   total: 59s      remaining: 15m 22s
+700:    test: 0.6684465 best: 0.6684526 (699)   total: 1m 8s    remaining: 15m 12s
+800:    test: 0.6686783 best: 0.6686883 (795)   total: 1m 18s   remaining: 15m 4s
+900:    test: 0.6687332 best: 0.6687438 (885)   total: 1m 28s   remaining: 14m 57s
+1000:   test: 0.6689235 best: 0.6689394 (993)   total: 1m 38s   remaining: 14m 49s
+1100:   test: 0.6690040 best: 0.6690140 (1073)  total: 1m 48s   remaining: 14m 40s
+1200:   test: 0.6691378 best: 0.6691438 (1196)  total: 1m 59s   remaining: 14m 33s
+1300:   test: 0.6691371 best: 0.6691438 (1196)  total: 2m 9s    remaining: 14m 24s
+1400:   test: 0.6692413 best: 0.6692413 (1400)  total: 2m 19s   remaining: 14m 15s
+1500:   test: 0.6692635 best: 0.6692713 (1487)  total: 2m 29s   remaining: 14m 6s
+1600:   test: 0.6692862 best: 0.6693122 (1573)  total: 2m 39s   remaining: 13m 56s
+1700:   test: 0.6693652 best: 0.6693652 (1699)  total: 2m 49s   remaining: 13m 47s
+1800:   test: 0.6693659 best: 0.6693703 (1798)  total: 2m 59s   remaining: 13m 37s
+1900:   test: 0.6693925 best: 0.6693988 (1895)  total: 3m 9s    remaining: 13m 28s
+2000:   test: 0.6694338 best: 0.6694381 (1996)  total: 3m 19s   remaining: 13m 18s
+2100:   test: 0.6694448 best: 0.6694903 (2032)  total: 3m 29s   remaining: 13m 9s
+2200:   test: 0.6694230 best: 0.6694903 (2032)  total: 3m 40s   remaining: 12m 59s
+2300:   test: 0.6695329 best: 0.6695329 (2300)  total: 3m 50s   remaining: 12m 50s
+2400:   test: 0.6695024 best: 0.6695378 (2312)  total: 4m       remaining: 12m 41s
+2500:   test: 0.6694843 best: 0.6695378 (2312)  total: 4m 10s   remaining: 12m 32s
+2600:   test: 0.6694675 best: 0.6695378 (2312)  total: 4m 21s   remaining: 12m 22s
+bestTest = 0.6695378423
+bestIteration = 2312
+Shrink model to first 2313 iterations.
+最佳迭代: 2312
+第7折 AUC: 0.6695
+
+============================================================
+第8/10折
+============================================================
+训练集: (1609776, 82), 正样本: 0.3078
+验证集: (178861, 82), 正样本: 0.3087
+Default metric period is 5 because AUC is/are not implemented for GPU
+0:      test: 0.6532195 best: 0.6532195 (0)     total: 98.1ms   remaining: 16m 21s
+100:    test: 0.6654565 best: 0.6654565 (100)   total: 9.82s    remaining: 16m 2s
+200:    test: 0.6682618 best: 0.6682618 (200)   total: 19.5s    remaining: 15m 50s
+300:    test: 0.6694954 best: 0.6694954 (300)   total: 29.3s    remaining: 15m 44s
+400:    test: 0.6702348 best: 0.6702348 (400)   total: 39.2s    remaining: 15m 37s
+500:    test: 0.6707756 best: 0.6707756 (500)   total: 49.1s    remaining: 15m 31s
+600:    test: 0.6710134 best: 0.6710134 (600)   total: 59.2s    remaining: 15m 25s
+700:    test: 0.6713169 best: 0.6713169 (700)   total: 1m 9s    remaining: 15m 16s
+800:    test: 0.6715032 best: 0.6715071 (797)   total: 1m 19s   remaining: 15m 8s
+900:    test: 0.6716221 best: 0.6716221 (900)   total: 1m 29s   remaining: 15m 2s
+1000:   test: 0.6718218 best: 0.6718218 (1000)  total: 1m 39s   remaining: 14m 52s
+1100:   test: 0.6718799 best: 0.6718857 (1095)  total: 1m 49s   remaining: 14m 43s
+1200:   test: 0.6720002 best: 0.6720002 (1200)  total: 1m 59s   remaining: 14m 33s
+1300:   test: 0.6721191 best: 0.6721191 (1300)  total: 2m 9s    remaining: 14m 24s
+1400:   test: 0.6721617 best: 0.6721617 (1400)  total: 2m 19s   remaining: 14m 15s
+1500:   test: 0.6721974 best: 0.6722299 (1479)  total: 2m 29s   remaining: 14m 5s
+1600:   test: 0.6722313 best: 0.6722339 (1599)  total: 2m 39s   remaining: 13m 56s
+1700:   test: 0.6722589 best: 0.6722735 (1692)  total: 2m 49s   remaining: 13m 47s
+1800:   test: 0.6722999 best: 0.6723099 (1778)  total: 2m 59s   remaining: 13m 38s
+1900:   test: 0.6723815 best: 0.6723815 (1900)  total: 3m 9s    remaining: 13m 29s
+2000:   test: 0.6725042 best: 0.6725042 (2000)  total: 3m 20s   remaining: 13m 20s
+2100:   test: 0.6725008 best: 0.6725267 (2014)  total: 3m 30s   remaining: 13m 11s
+2200:   test: 0.6725402 best: 0.6725454 (2197)  total: 3m 40s   remaining: 13m 1s
+2300:   test: 0.6725814 best: 0.6725814 (2300)  total: 3m 50s   remaining: 12m 51s
+2400:   test: 0.6725917 best: 0.6725932 (2398)  total: 4m       remaining: 12m 42s
+2500:   test: 0.6725653 best: 0.6725942 (2404)  total: 4m 11s   remaining: 12m 32s
+2600:   test: 0.6725499 best: 0.6725942 (2404)  total: 4m 21s   remaining: 12m 23s
+2700:   test: 0.6725537 best: 0.6725942 (2404)  total: 4m 31s   remaining: 12m 14s
+bestTest = 0.6725941896
+bestIteration = 2404
+Shrink model to first 2405 iterations.
+最佳迭代: 2404
+第8折 AUC: 0.6726
+
+============================================================
+第9/10折
+============================================================
+训练集: (1609776, 82), 正样本: 0.3078
+验证集: (178861, 82), 正样本: 0.3084
+Default metric period is 5 because AUC is/are not implemented for GPU
+0:      test: 0.6528551 best: 0.6528551 (0)     total: 96.7ms   remaining: 16m 6s
+100:    test: 0.6635532 best: 0.6635532 (100)   total: 9.75s    remaining: 15m 55s
+200:    test: 0.6661879 best: 0.6661879 (200)   total: 19.4s    remaining: 15m 47s
+300:    test: 0.6672242 best: 0.6672242 (300)   total: 29.2s    remaining: 15m 40s
+400:    test: 0.6678324 best: 0.6678333 (398)   total: 39.1s    remaining: 15m 35s
+500:    test: 0.6681854 best: 0.6681854 (500)   total: 48.9s    remaining: 15m 27s
+600:    test: 0.6685734 best: 0.6685734 (600)   total: 59s      remaining: 15m 22s
+700:    test: 0.6687794 best: 0.6687893 (696)   total: 1m 8s    remaining: 15m 14s
+800:    test: 0.6689351 best: 0.6689442 (798)   total: 1m 19s   remaining: 15m 7s
+900:    test: 0.6691168 best: 0.6691225 (898)   total: 1m 29s   remaining: 15m
+1000:   test: 0.6693028 best: 0.6693072 (996)   total: 1m 39s   remaining: 14m 51s
+1100:   test: 0.6693559 best: 0.6693559 (1100)  total: 1m 49s   remaining: 14m 42s
+1200:   test: 0.6695144 best: 0.6695170 (1196)  total: 1m 59s   remaining: 14m 33s
+1300:   test: 0.6695821 best: 0.6695883 (1296)  total: 2m 9s    remaining: 14m 23s
+1400:   test: 0.6696635 best: 0.6696715 (1363)  total: 2m 19s   remaining: 14m 14s
+1500:   test: 0.6696283 best: 0.6696824 (1420)  total: 2m 29s   remaining: 14m 5s
+1600:   test: 0.6697083 best: 0.6697083 (1600)  total: 2m 39s   remaining: 13m 55s
+1700:   test: 0.6697761 best: 0.6697809 (1699)  total: 2m 49s   remaining: 13m 45s
+1800:   test: 0.6697398 best: 0.6697809 (1699)  total: 2m 59s   remaining: 13m 35s
+1900:   test: 0.6698021 best: 0.6698021 (1900)  total: 3m 9s    remaining: 13m 26s
+2000:   test: 0.6698083 best: 0.6698292 (1979)  total: 3m 19s   remaining: 13m 17s
+2100:   test: 0.6697870 best: 0.6698385 (2040)  total: 3m 29s   remaining: 13m 7s
+2200:   test: 0.6698613 best: 0.6698613 (2200)  total: 3m 39s   remaining: 12m 57s
+2300:   test: 0.6698397 best: 0.6698681 (2221)  total: 3m 49s   remaining: 12m 49s
+2400:   test: 0.6698763 best: 0.6698773 (2399)  total: 4m       remaining: 12m 39s
+2500:   test: 0.6699325 best: 0.6699401 (2496)  total: 4m 10s   remaining: 12m 30s
+2600:   test: 0.6699389 best: 0.6699448 (2521)  total: 4m 20s   remaining: 12m 21s
+2700:   test: 0.6699593 best: 0.6699647 (2683)  total: 4m 31s   remaining: 12m 12s
+2800:   test: 0.6699294 best: 0.6699923 (2742)  total: 4m 41s   remaining: 12m 3s
+2900:   test: 0.6699574 best: 0.6699923 (2742)  total: 4m 51s   remaining: 11m 53s
+3000:   test: 0.6700087 best: 0.6700087 (3000)  total: 5m 2s    remaining: 11m 44s
+3100:   test: 0.6700551 best: 0.6700551 (3100)  total: 5m 12s   remaining: 11m 34s
+3200:   test: 0.6699817 best: 0.6700551 (3100)  total: 5m 22s   remaining: 11m 25s
+3300:   test: 0.6700071 best: 0.6700551 (3100)  total: 5m 33s   remaining: 11m 16s
+3400:   test: 0.6699710 best: 0.6700551 (3100)  total: 5m 43s   remaining: 11m 6s
+bestTest = 0.6700550914
+bestIteration = 3100
+Shrink model to first 3101 iterations.
+最佳迭代: 3100
+第9折 AUC: 0.6701
+
+============================================================
+第10/10折
+============================================================
+训练集: (1609749, 82), 正样本: 0.3077
+验证集: (178888, 82), 正样本: 0.3093
+Default metric period is 5 because AUC is/are not implemented for GPU
+0:      test: 0.6521966 best: 0.6521966 (0)     total: 97.7ms   remaining: 16m 17s
+100:    test: 0.6644320 best: 0.6644320 (100)   total: 9.79s    remaining: 15m 59s
+200:    test: 0.6671179 best: 0.6671179 (200)   total: 19.6s    remaining: 15m 53s
+300:    test: 0.6682632 best: 0.6682632 (300)   total: 29.4s    remaining: 15m 48s
+400:    test: 0.6688407 best: 0.6688456 (390)   total: 39.2s    remaining: 15m 37s
+500:    test: 0.6693129 best: 0.6693129 (500)   total: 49s      remaining: 15m 28s
+600:    test: 0.6697108 best: 0.6697112 (599)   total: 58.7s    remaining: 15m 18s
+700:    test: 0.6699935 best: 0.6699935 (700)   total: 1m 8s    remaining: 15m 10s
+800:    test: 0.6701604 best: 0.6701604 (800)   total: 1m 18s   remaining: 15m 3s
+900:    test: 0.6702889 best: 0.6702889 (900)   total: 1m 28s   remaining: 14m 58s
+1000:   test: 0.6704974 best: 0.6705018 (998)   total: 1m 39s   remaining: 14m 50s
+1100:   test: 0.6705203 best: 0.6705346 (1050)  total: 1m 49s   remaining: 14m 43s
+1200:   test: 0.6706657 best: 0.6706657 (1200)  total: 1m 59s   remaining: 14m 35s
+1300:   test: 0.6707072 best: 0.6707101 (1282)  total: 2m 9s    remaining: 14m 26s
+1400:   test: 0.6707582 best: 0.6708040 (1358)  total: 2m 19s   remaining: 14m 16s
+1500:   test: 0.6707883 best: 0.6708040 (1358)  total: 2m 29s   remaining: 14m 8s
+1600:   test: 0.6708617 best: 0.6708776 (1578)  total: 2m 39s   remaining: 13m 58s
+1700:   test: 0.6709334 best: 0.6709407 (1658)  total: 2m 50s   remaining: 13m 49s
+1800:   test: 0.6709861 best: 0.6710020 (1787)  total: 3m       remaining: 13m 40s
+1900:   test: 0.6710030 best: 0.6710030 (1900)  total: 3m 10s   remaining: 13m 30s
+2000:   test: 0.6710566 best: 0.6710604 (1998)  total: 3m 20s   remaining: 13m 22s
+2100:   test: 0.6710628 best: 0.6710870 (2061)  total: 3m 30s   remaining: 13m 13s
+2200:   test: 0.6710842 best: 0.6710969 (2143)  total: 3m 41s   remaining: 13m 3s
+2300:   test: 0.6710337 best: 0.6710975 (2212)  total: 3m 51s   remaining: 12m 54s
+2400:   test: 0.6711154 best: 0.6711222 (2390)  total: 4m 1s    remaining: 12m 44s
+2500:   test: 0.6710745 best: 0.6711244 (2402)  total: 4m 11s   remaining: 12m 35s
+2600:   test: 0.6711050 best: 0.6711244 (2402)  total: 4m 22s   remaining: 12m 25s
+2700:   test: 0.6710933 best: 0.6711244 (2402)  total: 4m 32s   remaining: 12m 16s
+bestTest = 0.6711244285
+bestIteration = 2402
+Shrink model to first 2403 iterations.
+最佳迭代: 2402
+第10折 AUC: 0.6711
+
+============================================================
+交叉验证结果汇总
+============================================================
+各折AUC: ['0.6713', '0.6704', '0.6714', '0.6722', '0.6728', '0.6717', '0.6695', '0.6726', '0.6701', '0.6711']
+平均AUC: 0.6713 ± 0.0010
+最大AUC: 0.6728
+最小AUC: 0.6695
+============================================================
+
+集成预测...
+保存结果...
+预测结果已保存到 submission_optimized.csv
+模型已保存到 catboost_optimized.cbm
+评估结果已保存到 model_results_optimized.json
+
+前20个重要特征:
+                        feature  importance
+user_displayed_item_num_missing    8.646565
+                      dtype_ctr    7.857593
+        user_displayed_item_num    6.417345
+                       distance    4.294526
+                     cityid_ctr    2.935864
+                     cate_2_ctr    2.620737
+                           hour    2.590048
+                      level_ctr    2.588688
+                          price    2.481356
+                  user_home_dis    2.365032
+                 item_ave_price    2.275327
+                          dtype    2.203916
+                  user_work_dis    2.123368
+                  geohash_count    2.021642
+                    online_days    1.872492
+                     city_cate1    1.858342
+                         cityid    1.833754
+                   itemid_count    1.821927
+                    mobile_type    1.693180
+                   cityid_count    1.674138
+
+总耗时: 61.5 分钟
+优化版CatBoost训练完成！
+(meituan) > wenhao: meituan-rec (catboost)
+(meituan) > wenhao: meituan-rec (catboost)
