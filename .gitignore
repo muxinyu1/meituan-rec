@@ -6,3 +6,4 @@ data
 *.z01
 *.z02
 *.zip
+__pycache__
