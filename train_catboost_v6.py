@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 """
-CatBoost训练脚本 V6 (参考特征工程增强版)
+CatBoost training script V6 (feature-engineering enhanced)
 
-在 V3 的基础上，补充了《特征工程参考》中未覆盖的特征，包括：
-- 用户行为/偏好统计与分箱
-- 商品侧统计与时间行为特征
-- 更丰富的时间周期与时段标记、活跃度分箱
-- 气候特征（温差、归一化、天气类型）
-- 距离多粒度分箱、距离比值/差值、地理前缀匹配及城市聚合
-- 高价值特征（高CTR时段/类目/职业/等级组合，距离等级等）
+Built on V3 with additions from the reference feature guide, including:
+- User behavior/preference stats and binning
+- Item-side statistics and temporal behaviors
+- Richer time cycles, period flags, and activity binning
+- Climate features (temperature gap/normalization, weather types)
+- Multi-granularity distance bins, ratios/differences, geo prefixes, city aggregates
+- High-value features (high-CTR periods/categories/jobs/levels combos, distance levels)
 
-其他训练流程保持与 V3 一致：使用 K 折 Target Encoding + CatBoost GPU 训练与集成。
+Training pipeline stays the same as V3: K-fold target encoding + CatBoost GPU CV/ensemble.
 """
 
 import gc
@@ -29,12 +29,12 @@ warnings.filterwarnings('ignore')
 
 
 def safe_divide(num, den):
-    """安全除法，避免除零"""
+    """Safe division to avoid division-by-zero"""
     return np.where(den == 0, 0, num / den)
 
 
 class CTRFeatureEncoder:
-    """基于K折的Target Encoding编码器，避免数据泄露"""
+    """K-fold target encoding encoder to mitigate leakage"""
     
     def __init__(self, cols, n_folds=5, smoothing=20, random_state=42):
         self.cols = cols
@@ -96,7 +96,7 @@ class CTRFeatureEncoder:
 
 
 def reduce_mem_usage(df):
-    """优化DataFrame内存使用"""
+    """Downcast numeric dtypes to reduce DataFrame memory"""
     start_mem = df.memory_usage().sum() / 1024**2
     
     for col in df.columns:
@@ -122,9 +122,9 @@ def reduce_mem_usage(df):
 
 
 def load_data():
-    """加载数据"""
+    """Load train/test from the script directory"""
     print("="*60)
-    print("加载数据...")
+    print("Loading data...")
     print("="*60)
     # 使用脚本所在目录作为数据目录，避免硬编码路径失效
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -139,7 +139,7 @@ def load_data():
 
 
 def add_user_behavior_features(df, train_len):
-    """用户行为特征（基于参考文档）"""
+    """User behavior features (per reference guide)"""
     if 'userid' not in df.columns:
         return df
 
@@ -184,7 +184,7 @@ def add_user_behavior_features(df, train_len):
 
 
 def add_item_features(df, train_len):
-    """商品侧特征（参考文档）"""
+    """Item-side features (per reference guide)"""
     if 'itemid' not in df.columns:
         return df
 
@@ -219,7 +219,7 @@ def add_item_features(df, train_len):
 
 
 def add_time_features(df, train_len):
-    """时间特征扩充"""
+    """Expanded time features"""
     if 'hour' in df.columns:
         hour_float = df['hour'].astype(float)
         df['is_morning'] = ((hour_float >= 5) & (hour_float < 12)).astype(np.int8)
@@ -242,7 +242,7 @@ def add_time_features(df, train_len):
                 df[f'{period}_sin_{n}'] = np.sin(2 * np.pi * n * period_float / max_val).astype(np.float32)
                 df[f'{period}_cos_{n}'] = np.cos(2 * np.pi * n * period_float / max_val).astype(np.float32)
 
-    # 用户活跃度/时间偏好分箱（基于训练集）
+    # User activity / time-preference binning (train-only stats)
     if 'userid' in df.columns and 'hour' in df.columns:
         train_part = df.iloc[:train_len]
         user_activity = train_part.groupby('userid').size()
@@ -280,7 +280,7 @@ def add_time_features(df, train_len):
                 bins = pd.qcut(stat_val, q=10, duplicates='drop', labels=False)
                 df[f'user_{col}_mean_bin'] = df['userid'].map(bins).fillna(bins.max()).astype(np.float32)
 
-    # 按时段的距离偏好（基于当前 df）
+    # Distance preference by time period (current df)
     for dist_col in ['distance', 'user_home_dis', 'user_work_dis']:
         if dist_col not in df.columns or 'hour' not in df.columns:
             continue
@@ -297,7 +297,7 @@ def add_time_features(df, train_len):
 
 
 def add_climate_features(df):
-    """气候相关特征"""
+    """Climate-related features"""
     if {'temp_high', 'temp_low'}.issubset(df.columns):
         df['temp_gap'] = (df['temp_high'].astype(float) - df['temp_low'].astype(float)).astype(np.float32)
         df['temp_norm'] = safe_divide(df['temp'].astype(float) - df['temp_low'].astype(float), df['temp_gap'].astype(float) + 1).astype(np.float32)
@@ -311,8 +311,8 @@ def add_climate_features(df):
 
 
 def add_distance_features(df, train_len):
-    """多粒度距离与地理特征"""
-    # geohash前缀 + 工作地geohash前缀
+    """Multi-granularity distance and geo features"""
+    # Geohash prefixes and work-geohash prefixes
     for i in range(1, 5):
         if 'geohash' in df.columns:
             df[f'geohash_prefix_{i}'] = df['geohash'].astype(str).str[:i]
@@ -321,7 +321,7 @@ def add_distance_features(df, train_len):
         if f'geohash_prefix_{i}' in df.columns and f'work_geohash_prefix_{i}' in df.columns:
             df[f'area_match_{i}'] = (df[f'geohash_prefix_{i}'] == df[f'work_geohash_prefix_{i}']).astype(np.int8)
 
-    # 城市级别统计
+    # City-level aggregates
     if 'cityid' in df.columns:
         train_part = df.iloc[:train_len]
         city_group = train_part.groupby('cityid')
@@ -352,7 +352,7 @@ def add_distance_features(df, train_len):
         df[f'{col}_user_diff'] = (df[col] - df[f'{col}_user_mean']).astype(np.float32)
         df[f'{col}_zscore'] = safe_divide(df[col] - df[col].mean(), df[col].std() + 1e-6).astype(np.float32)
 
-    # 距离交叉与差值
+    # Distance ratios and differences
     if {'distance', 'user_home_dis', 'user_work_dis'}.issubset(df.columns):
         df['home_work_ratio'] = safe_divide(df['user_home_dis'], df['user_work_dis'] + 1).astype(np.float32)
         df['distance_home_ratio'] = safe_divide(df['distance'], df['user_home_dis'] + 1).astype(np.float32)
@@ -364,7 +364,7 @@ def add_distance_features(df, train_len):
             city_mean = df.groupby('cityid')[col].transform('mean') if 'cityid' in df.columns else 0
             df[f'{col}_city_ratio'] = safe_divide(df[col], city_mean + 1).astype(np.float32)
 
-    # 距离与类目/价格等级交互
+    # Distance with category/price-level interactions
     if 'cate_1' in df.columns:
         for col in distance_cols:
             if col in df.columns:
@@ -382,7 +382,7 @@ def add_distance_features(df, train_len):
 
 
 def add_high_value_features(df):
-    """高价值特征（参考文档）"""
+    """High-value features (per reference guide)"""
     if 'hour' in df.columns:
         hour = pd.to_numeric(df['hour'], errors='coerce').fillna(-1)
         df['is_high_ctr_hour'] = ((hour >= 1) & (hour <= 2)).astype(np.int8)
@@ -402,7 +402,7 @@ def add_high_value_features(df):
     if {'level', 'distance_level'}.issubset(df.columns):
         df['high_level_close_distance'] = ((df['level'] >= 4.0) & (df['distance_level'] == 0)).astype(np.int8)
 
-    # 用户等级/职业/类目高价值
+    # High-value user/job/category flags
     if 'level' in df.columns:
         df['is_high_level'] = (pd.to_numeric(df['level'], errors='coerce').fillna(-1) >= 4.0).astype(np.int8)
     if 'job' in df.columns:
@@ -415,7 +415,7 @@ def add_high_value_features(df):
         if 'level' in df.columns:
             df['high_level_preferred_cate'] = ((pd.to_numeric(df['level'], errors='coerce').fillna(-1) >= 4.0) & (cate1_num == 209.0)).astype(np.int8)
 
-    # 组合特征
+    # Combination features
     if 'is_high_ctr_hour' in df.columns and 'is_high_ctr_cate' in df.columns:
         df['prime_time_prime_cate'] = (df['is_high_ctr_hour'].astype(bool) & df['is_high_ctr_cate'].astype(bool)).astype(np.int8)
     if 'is_high_ctr_hour' in df.columns and 'level' in df.columns:
@@ -425,7 +425,7 @@ def add_high_value_features(df):
     if {'level', 'job', 'is_high_ctr_hour'}.issubset(df.columns):
         df['high_quality_combination'] = ((pd.to_numeric(df['level'], errors='coerce').fillna(-1) >= 4.0) & (pd.to_numeric(df['job'], errors='coerce').fillna(-1) == 1) & df['is_high_ctr_hour'].astype(bool)).astype(np.int8)
 
-    # 高价值距离统计（基于用户/城市/时间）
+    # High-value distance stats (user/city/time based)
     distance_cols = ['distance', 'user_home_dis', 'user_work_dis']
     for col in distance_cols:
         if col not in df.columns:
@@ -451,12 +451,12 @@ def add_high_value_features(df):
 
 
 def create_features(train_df, test_df):
-    """V6增强版特征工程"""
+    """Feature engineering for V6"""
     print("="*60)
-    print("特征工程 V6...")
+    print("Feature engineering V6...")
     print("="*60)
     
-    # 保存关键列
+    # Preserve key columns
     test_sample_index = test_df['sample_index'].copy() if 'sample_index' in test_df.columns else None
     y_train = train_df['label'].copy()
     
@@ -464,9 +464,9 @@ def create_features(train_df, test_df):
     df = pd.concat([train_df, test_df], axis=0, ignore_index=True)
     
     # ==========================================
-    # 1. 缺失值标记特征 (V3继承)
+    # 1) Missing-value flags (from V3)
     # ==========================================
-    print("\n1. 创建缺失值标记特征...")
+    print("\n1) Building missing-value flags...")
     high_missing_cols = ['price', 'online_days', 'user_displayed_item_num', 'distance', 
                          'item_ave_price', 'level', 'cate_1', 'cate_2', 'cate_3']
     for col in high_missing_cols:
@@ -474,25 +474,25 @@ def create_features(train_df, test_df):
             df[f'{col}_missing'] = df[col].isnull().astype(np.int8)
     
     # ==========================================
-    # 2. 时间特征 (扩展)
+    # 2) Time features (extended)
     # ==========================================
-    print("\n2. 创建时间特征...")
+    print("\n2) Building time features...")
     if 'timestamp' in df.columns:
         df['timestamp_dt'] = pd.to_datetime(df['timestamp'], unit='s', errors='coerce')
         
-        # 周期性编码（基础+多周期）
+        # Cyclic encodings (1x, 2x periods)
         df['hour_sin'] = np.sin(2 * np.pi * df['timestamp_dt'].dt.hour / 24).astype(np.float32)
         df['hour_cos'] = np.cos(2 * np.pi * df['timestamp_dt'].dt.hour / 24).astype(np.float32)
         df['weekday_sin'] = np.sin(2 * np.pi * df['timestamp_dt'].dt.weekday / 7).astype(np.float32)
         df['weekday_cos'] = np.cos(2 * np.pi * df['timestamp_dt'].dt.weekday / 7).astype(np.float32)
         
-        # 是否周末
+        # Weekend flag
         if 'weekday' in df.columns:
             df['is_weekend'] = df['weekday'].isin([6, 7]).astype(np.int8)
         else:
             df['is_weekend'] = df['timestamp_dt'].dt.weekday.isin([5, 6]).astype(np.int8)
         
-        # 时段分类
+        # Time-of-day buckets
         def get_time_period(hour):
             if 6 <= hour < 11:
                 return 1  # 上午
@@ -512,9 +512,9 @@ def create_features(train_df, test_df):
             df['is_weekend'] = df['weekday'].isin([6, 7]).astype(np.int8)
 
     # ==========================================
-    # 3. 数值特征填充 + 对数
+    # 3) Numeric imputation + log transforms
     # ==========================================
-    print("\n3. 数值特征填充与基础处理...")
+    print("\n3) Numeric imputation and basic transforms...")
     numerical_cols = ['distance', 'item_ave_price', 'price', 'user_home_dis', 'user_work_dis',
                       'temp', 'temp_low', 'temp_high', 'user_displayed_item_num', 'online_days']
     train_part = df.iloc[:train_len]
@@ -528,7 +528,7 @@ def create_features(train_df, test_df):
         if col in df.columns:
             df[f'{col}_log'] = np.log1p(np.maximum(df[col], 0)).astype(np.float32)
 
-    # 分箱（保持与参考文档一致的多粒度基础分箱）
+    # Binning (multi-granularity per reference)
     if 'distance' in df.columns:
         df['distance_bin'] = pd.cut(df['distance'], bins=[-1, 20, 40, 60, 80, 200], 
                                      labels=[0, 1, 2, 3, 4]).astype(float).fillna(2).astype(np.int8)
@@ -536,20 +536,20 @@ def create_features(train_df, test_df):
         df['price_bin'] = pd.cut(df['price'], bins=[-1, 20, 40, 60, 80, 200], 
                                   labels=[0, 1, 2, 3, 4]).astype(float).fillna(2).astype(np.int8)
 
-    # 温度舒适度与温差
+    # Temperature comfort and range
     if 'temp' in df.columns:
         df['temp_comfort'] = ((df['temp'] >= 17) & (df['temp'] <= 26)).astype(np.int8)
     if 'temp_high' in df.columns and 'temp_low' in df.columns:
         df['temp_range'] = (df['temp_high'] - df['temp_low']).astype(np.float32)
 
-    # 高价值价位标记（用于组合特征）
+    # High-CTR price flag (for combos)
     if 'price' in df.columns:
         df['is_high_ctr_price'] = (df['price'] <= df['price'].quantile(0.2)).astype(np.int8)
 
     # ==========================================
-    # 4. Count Encoding (V3继承)
+    # 4) Count encoding (from V3)
     # ==========================================
-    print("\n4. 创建Count Encoding特征...")
+    print("\n4) Building count-encoding features...")
     count_cols = ['userid', 'itemid', 'geohash', 'cityid', 'loc_cityid', 
                   'cate_1', 'cate_2', 'cate_3', 'dtype']
     
@@ -561,9 +561,9 @@ def create_features(train_df, test_df):
             df[f'{col}_count_log'] = np.log1p(df[f'{col}_count']).astype(np.float32)
     
     # ==========================================
-    # 5. 交叉特征 (在 V3 基础上增加)
+    # 5) Cross features (extended over V3)
     # ==========================================
-    print("\n5. 创建交叉特征...")
+    print("\n5) Building cross features...")
     if 'cityid' in df.columns and 'loc_cityid' in df.columns:
         df['is_same_city'] = (df['cityid'] == df['loc_cityid']).astype(np.int8)
     
@@ -582,35 +582,35 @@ def create_features(train_df, test_df):
             df[new_col] = df[c1].astype(str) + '_' + df[c2].astype(str)
 
     # ==========================================
-    # 6. 用户/商品/时间/气候/距离特征（参考文档新增）
+    # 6) User / item / time / climate / distance features (reference additions)
     # ==========================================
-    print("\n6. 用户行为特征...")
+    print("\n6) User behavior features...")
     df = add_user_behavior_features(df, train_len)
     
-    print("\n7. 商品特征...")
+    print("\n7) Item features...")
     df = add_item_features(df, train_len)
 
-    print("\n8. 时间高级特征...")
+    print("\n8) Advanced time features...")
     df = add_time_features(df, train_len)
 
-    print("\n9. 气候特征...")
+    print("\n9) Climate features...")
     df = add_climate_features(df)
 
-    print("\n10. 距离与地理特征...")
+    print("\n10) Distance & geo features...")
     df = add_distance_features(df, train_len)
 
-    print("\n11. 高价值特征...")
+    print("\n11) High-value features...")
     df = add_high_value_features(df)
 
-    # 移除时间戳原始列
+    # Drop raw timestamp columns
     for col in ['timestamp', 'timestamp_dt']:
         if col in df.columns:
             df.drop(columns=[col], inplace=True)
 
     # ==========================================
-    # 7. 类别特征处理
+    # 7) Categorical handling
     # ==========================================
-    print("\n12. 处理类别特征...")
+    print("\n12) Handling categorical features...")
     categorical_features = [
         'userid', 'itemid', 'geohash', 'cityid', 'loc_cityid', 
         'weekday', 'hour', 'weather', 'dtype', 'cate_1', 'cate_2', 'cate_3',
@@ -627,20 +627,20 @@ def create_features(train_df, test_df):
         'prime_time_prime_cate', 'high_level_prime_time', 'job1_preferred_price', 'high_quality_combination',
     ]
     
-    # geohash前缀、区域匹配
+    # Geohash prefixes and area matches
     for i in range(1, 5):
         for col in [f'geohash_prefix_{i}', f'work_geohash_prefix_{i}', f'area_match_{i}']:
             if col in df.columns:
                 categorical_features.append(col)
     
-    # 按价格/距离分箱的特征
+    # Price/distance bin-derived features
     for col in ['distance', 'user_home_dis', 'user_work_dis']:
         for suf in ['bin_5', 'bin_10', 'bin_20']:
             name = f'{col}_{suf}'
             if name in df.columns:
                 categorical_features.append(name)
 
-    # 添加交叉特征到类别列表
+    # Append cross features into categorical list
     for c1, c2 in cross_pairs:
         col_name = f'{c1}_{c2}'
         if col_name in df.columns:
@@ -659,9 +659,9 @@ def create_features(train_df, test_df):
     gc.collect()
     
     # ==========================================
-    # 8. Target Encoding (V2继承)
+    # 8) Target encoding (from V2)
     # ==========================================
-    print("\n13. 创建Target Encoding特征...")
+    print("\n13) Building target-encoding features...")
     
     ctr_cols = ['dtype', 'cate_1', 'cate_2', 'cate_3', 'cityid', 
                 'weather', 'time_period', 'age', 'level', 'gender',
@@ -692,7 +692,7 @@ def create_features(train_df, test_df):
     X_train = reduce_mem_usage(X_train)
     X_test = reduce_mem_usage(X_test)
     
-    print(f"\n最终特征数量: {len([c for c in X_train.columns if c not in exclude_cols])}")
+    print(f"\nFinal feature count: {len([c for c in X_train.columns if c not in exclude_cols])}")
     
     del train_processed, test_processed
     gc.collect()
@@ -703,7 +703,7 @@ def create_features(train_df, test_df):
 def cross_validation(X, y, categorical_features, n_splits=10):
     """K折交叉验证"""
     print("="*60)
-    print(f"开始{n_splits}折交叉验证...")
+    print(f"Starting {n_splits}-fold cross-validation...")
     print("="*60)
     
     weekdays = X['weekday'].astype(str)
@@ -757,7 +757,7 @@ def cross_validation(X, y, categorical_features, n_splits=10):
     
     for fold in range(n_splits):
         print(f"\n{'='*60}")
-        print(f"第{fold+1}/{n_splits}折")
+        print(f"Fold {fold+1}/{n_splits}")
         print(f"{'='*60}")
         
         val_indices = folds[fold]
@@ -771,8 +771,8 @@ def cross_validation(X, y, categorical_features, n_splits=10):
         X_val_fold = X.iloc[val_indices][feature_cols].copy()
         y_val_fold = y.iloc[val_indices].copy()
         
-        print(f"训练集: {X_train_fold.shape}, 正样本: {y_train_fold.mean():.4f}")
-        print(f"验证集: {X_val_fold.shape}, 正样本: {y_val_fold.mean():.4f}")
+        print(f"Train: {X_train_fold.shape}, pos rate: {y_train_fold.mean():.4f}")
+        print(f"Valid: {X_val_fold.shape}, pos rate: {y_val_fold.mean():.4f}")
         
         # 确保类别特征为字符串
         for col in categorical_features:
@@ -789,25 +789,25 @@ def cross_validation(X, y, categorical_features, n_splits=10):
         model = CatBoostClassifier(**params)
         model.fit(train_pool, eval_set=val_pool, use_best_model=True, plot=False)
         
-        print(f"最佳迭代: {model.get_best_iteration()}")
+        print(f"Best iteration: {model.get_best_iteration()}")
         
         y_pred_proba = model.predict_proba(val_pool)[:, 1]
         auc = roc_auc_score(y_val_fold, y_pred_proba)
         cv_scores.append(auc)
         models.append(model)
         
-        print(f"第{fold+1}折 AUC: {auc:.4f}")
+        print(f"Fold {fold+1} AUC: {auc:.4f}")
         
         del train_pool, val_pool, X_val_fold, y_val_fold
         gc.collect()
     
     print(f"\n{'='*60}")
-    print("交叉验证结果汇总")
+    print("Cross-validation summary")
     print(f"{'='*60}")
-    print(f"各折AUC: {[f'{s:.4f}' for s in cv_scores]}")
-    print(f"平均AUC: {np.mean(cv_scores):.4f} ± {np.std(cv_scores):.4f}")
-    print(f"最大AUC: {max(cv_scores):.4f}")
-    print(f"最小AUC: {min(cv_scores):.4f}")
+    print(f"Fold AUCs: {[f'{s:.4f}' for s in cv_scores]}")
+    print(f"Mean AUC: {np.mean(cv_scores):.4f} ± {np.std(cv_scores):.4f}")
+    print(f"Max AUC: {max(cv_scores):.4f}")
+    print(f"Min AUC: {min(cv_scores):.4f}")
     print(f"{'='*60}\n")
     
     return models, cv_scores
@@ -815,7 +815,7 @@ def cross_validation(X, y, categorical_features, n_splits=10):
 
 def ensemble_predict(models, X_test, categorical_features):
     """集成预测"""
-    print("集成预测...")
+    print("Ensembling predictions...")
     
     exclude_cols = ['sample_index', 'label']
     feature_cols = [col for col in X_test.columns if col not in exclude_cols]
@@ -841,17 +841,17 @@ def ensemble_predict(models, X_test, categorical_features):
 
 def save_results(models, cv_scores, predictions, X_test):
     """保存结果"""
-    print("保存结果...")
+    print("Saving results...")
     
     submission = pd.DataFrame({
         'sample_index': range(len(predictions)) if 'sample_index' not in X_test.columns else X_test['sample_index'],
         'label': predictions
     })
     submission.to_csv('submission_v6.csv', index=False)
-    print("预测结果已保存到 submission_v6.csv")
+    print("Submission saved to submission_v6.csv")
     
     models[0].save_model('catboost_v6.cbm')
-    print("模型已保存到 catboost_v6.cbm")
+    print("Model saved to catboost_v6.cbm")
     
     results = {
         'metrics': {
@@ -872,7 +872,7 @@ def save_results(models, cv_scores, predictions, X_test):
     with open('model_results_v6.json', 'w') as f:
         json.dump(results, f, indent=4, default=convert)
     
-    print("评估结果已保存到 model_results_v6.json")
+    print("Evaluation saved to model_results_v6.json")
     
     importance = models[0].get_feature_importance()
     feature_cols = [col for col in X_test.columns if col not in ['sample_index', 'label']]
@@ -882,7 +882,7 @@ def save_results(models, cv_scores, predictions, X_test):
         'importance': importance
     }).sort_values('importance', ascending=False)
     
-    print("\n前20个重要特征:")
+    print("\nTop-20 important features:")
     print(importance_df.head(20).to_string(index=False))
     
     importance_df.to_csv('feature_importance_v6.csv', index=False)
@@ -907,8 +907,8 @@ def main():
     save_results(models, cv_scores, predictions, X_test)
     
     elapsed = time.time() - start_time
-    print(f"\n总耗时: {elapsed/60:.1f} 分钟")
-    print("V6版CatBoost训练完成！")
+    print(f"\nTotal time: {elapsed/60:.1f} minutes")
+    print("CatBoost V6 training done!")
 
 
 if __name__ == "__main__":
